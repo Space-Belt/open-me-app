@@ -1,53 +1,141 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
-
-import { Platform } from 'react-native';
-
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
-
-export const Colors = {
-  light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
-  },
-  dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
-  },
+/* 색상 */
+export const blackColors = {
+  five: "#F4F5F6",
+  ten: "#E6E8EA",
+  twenty: "#CDD1D5",
+  thirty: "#B1B8BE",
+  forty: "#8A949E",
+  fifty: "#6D7882",
+  sixty: "#58616A",
+  seventy: "#464C53",
+  eighty: "#33363D",
+  ninety: "#1E2124",
+  ninetyfive: "#131416",
+  hundred: "#000000",
+};
+export const primaryColors = {
+  five: "#E5F1FF",
+  ten: "#DBECFF",
+  twenty: "#A8D1FF",
+  thirty: "#75B6FF",
+  forty: "#479DFF",
+  fifty: "#0077FF",
+  sixty: "#0066DB",
+  seventy: "#004FA8",
+  eighty: "#003066",
+  ninety: "#001833",
+  ninetyfive: "#000C1A",
+  hundred: "#000000",
 };
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
+/* 폰트 */
+export const typography = {
+  title30Bold: {
+    fontFamily: "Pretendard-Bold",
+    fontSize: 30,
+    lineHeight: 45,
+    letterSpacing: -0.9,
   },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
+  title30Medium: {
+    fontFamily: "Pretendard-Medium",
+    fontSize: 30,
+    lineHeight: 45,
+    letterSpacing: -0.9,
   },
-  web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+  title24Bold: {
+    fontFamily: "Pretendard-Bold",
+    fontSize: 24,
+    lineHeight: 36,
+    letterSpacing: -0.72,
   },
-});
+  title24Medium: {
+    fontFamily: "Pretendard-Medium",
+    fontSize: 24,
+    lineHeight: 36,
+    letterSpacing: -0.72,
+  },
+  headline20Bold: {
+    fontFamily: "Pretendard-Bold",
+    fontSize: 20,
+    lineHeight: 30,
+    letterSpacing: -0.6,
+  },
+  headline20Medium: {
+    fontFamily: "Pretendard-Medium",
+    fontSize: 20,
+    lineHeight: 30,
+    letterSpacing: -0.6,
+  },
+  headline18Bold: {
+    fontFamily: "Pretendard-Bold",
+    fontSize: 18,
+    lineHeight: 27,
+    letterSpacing: -0.54,
+  },
+  headline18Medium: {
+    fontFamily: "Pretendard-Medium",
+    fontSize: 18,
+    lineHeight: 27,
+    letterSpacing: -0.54,
+  },
+  headline18Regular: {
+    fontFamily: "Pretendard-Regular",
+    fontSize: 18,
+    lineHeight: 27,
+    letterSpacing: -0.54,
+  },
+  body16SemiBold: {
+    fontFamily: "Pretendard-SemiBold",
+    fontSize: 16,
+    lineHeight: 24,
+    letterSpacing: -0.48,
+  },
+  body16Medium: {
+    fontFamily: "Pretendard-Medium",
+    fontSize: 16,
+    lineHeight: 24,
+    letterSpacing: -0.48,
+  },
+  body16Regular: {
+    fontFamily: "Pretendard-Regular",
+    fontSize: 16,
+    lineHeight: 24,
+    letterSpacing: -0.48,
+  },
+  body14SemiBold: {
+    fontFamily: "Pretendard-SemiBold",
+    fontSize: 14,
+    lineHeight: 21,
+    letterSpacing: -0.42,
+  },
+  body14Medium: {
+    fontFamily: "Pretendard-Medium",
+    fontSize: 14,
+    lineHeight: 21,
+    letterSpacing: -0.42,
+  },
+  body14Regular: {
+    fontFamily: "Pretendard-Regular",
+    fontSize: 14,
+    lineHeight: 21,
+    letterSpacing: -0.42,
+  },
+  caption12SemiBold: {
+    fontFamily: "Pretendard-SemiBold",
+    fontSize: 12,
+    lineHeight: 18,
+    letterSpacing: -0.36,
+  },
+  caption12Medium: {
+    fontFamily: "Pretendard-Medium",
+    fontSize: 12,
+    lineHeight: 18,
+    letterSpacing: -0.36,
+  },
+  caption12Regular: {
+    fontFamily: "Pretendard-Regular",
+    fontSize: 12,
+    lineHeight: 18,
+    letterSpacing: -0.36,
+  },
+};
