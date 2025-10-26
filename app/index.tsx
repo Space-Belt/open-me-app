@@ -1,16 +1,24 @@
-import BasicText from "@/components/common/BasicText";
-import { StyleSheet, View } from "react-native";
+import BasicIndicator from "@/components/common/BasicIndicator";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "expo-router";
+import { useEffect } from "react";
+import { StyleSheet } from "react-native";
 
 export default function Index() {
-  return (
-    <View style={styles.container}>
-      <BasicText>로딩 중...</BasicText>
-    </View>
-  );
+  const router = useRouter();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading) {
+      if (isAuthenticated) {
+        router.replace("/(tabs)");
+      } else {
+        router.replace("/(auth)/signin");
+      }
+    }
+  }, [isLoading, isAuthenticated]);
+
+  return <BasicIndicator />;
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+const styles = StyleSheet.create({});
