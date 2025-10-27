@@ -2,9 +2,9 @@ import { primaryColors, typography } from "@/constants/theme";
 import React from "react";
 import {
   ActivityIndicator,
+  Pressable,
   StyleSheet,
   TextStyle,
-  TouchableOpacity,
   ViewStyle,
 } from "react-native";
 import BasicText from "./BasicText";
@@ -16,7 +16,7 @@ interface BasicButtonProps {
   size?: "small" | "medium" | "large";
   disabled?: boolean;
   loading?: boolean;
-  style?: ViewStyle;
+  style?: ViewStyle | ViewStyle[];
   textStyle?: TextStyle;
   width?: number;
 }
@@ -33,20 +33,20 @@ const BasicButton = ({
   width,
 }: BasicButtonProps) => {
   return (
-    <TouchableOpacity
-      style={[
+    <Pressable
+      style={({ pressed }) => [
         styles.button,
         styles[variant],
         styles[size],
         (disabled || loading) && styles.disabled,
         {
           width: width || "100%",
+          opacity: pressed ? 0.7 : 1,
         },
         style,
       ]}
       onPress={onPress}
       disabled={disabled || loading}
-      activeOpacity={0.7}
     >
       {loading ? (
         <ActivityIndicator
@@ -65,7 +65,7 @@ const BasicButton = ({
           {title}
         </BasicText>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
