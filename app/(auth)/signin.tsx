@@ -1,67 +1,176 @@
+import { emailSignIn } from "@/api/authController";
 import BasicButton from "@/components/common/BasicButton";
 import BasicContainer from "@/components/common/BasicContainer";
+import BasicHeader from "@/components/common/BasicHeader";
 import BasicInput from "@/components/common/BasicInput";
+import { primaryColors, typography } from "@/constants/theme";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  handleAuthInput,
+  validateEmailFormat,
+  validatePassword,
+} from "@/utils/auth";
+import { showOneButtonModal } from "@/utils/modal";
+import { isIOS } from "@/utils/public";
+import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import {
+  Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 
 export default function SignInScreen() {
   const router = useRouter();
-  const [identification, setIdentification] = useState("");
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState<string>();
   const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState<string>();
 
-  const handleSignIn = async () => {};
+  const { login } = useAuth();
+
+  const mutation = useMutation({
+    mutationFn: async (data: { email: string; password: string }) =>
+      await emailSignIn(data.email, data.password),
+    onSuccess: async (data) => {
+      if (data && data.user && data.token) {
+        const tokens = {
+          uid: data.user.uid,
+          email: data.user.email ?? "",
+          accessToken: data.token.accessToken,
+          refreshToken: data.token.refreshToken,
+          expirationTime: data.token.expirationTime,
+        };
+        await login(tokens);
+        showOneButtonModal("로그인 성공", "로그인 되었습니다!", () => {
+          router.replace("/(tabs)");
+        });
+      }
+      console.log(JSON.stringify(data, null, 2));
+      if (data && data.message) {
+        showOneButtonModal("로그인 실패", data.message, () => {});
+      }
+    },
+    onError: (error) => {
+      showOneButtonModal("로그인 실패", "로그인 실패했습니다!", () => {});
+    },
+  });
+
+  const handleSignIn = async () => {
+    const pwdError = validatePassword(password);
+    const emailError = validateEmailFormat(email);
+    setPasswordError(pwdError);
+    if (!emailError) {
+      setEmailError("이메일을 확인해주세요.");
+    }
+    if (pwdError) return;
+
+    mutation.mutate({ email, password });
+  };
 
   const handleSignUp = () => {
     router.replace("/(auth)/signup");
   };
 
+  const handleLookAround = () => {
+    router.navigate("/(auth)/home");
+  };
+
   return (
-    <BasicContainer style={styles.container}>
-      <View style={styles.imageWrapper}>
-        <Image
-          source={require("@/assets/images/openme.png")}
-          style={styles.logoImg}
-        />
-      </View>
-      <View>
-        <BasicInput
-          label="아이디"
-          value={identification}
-          onChangeText={setIdentification}
-          placeholder="아이디를 입력해주세요"
-        />
-        <BasicInput
-          label="비밀번호"
-          value={password}
-          onChangeText={setPassword}
-          placeholder="비밀번호를 입력해주세요"
-        />
-        <BasicButton
-          title="로그인"
-          onPress={() => {}}
-          style={styles.btnStyle}
-        />
-        <BasicButton
-          title="회원가입"
-          onPress={handleSignUp}
-          style={styles.btnStyle}
-          variant="outline"
-        />
-      </View>
-    </BasicContainer>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={isIOS ? "padding" : undefined}
+      keyboardVerticalOffset={64}
+    >
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <ScrollView contentContainerStyle={styles.scrollStyle}>
+          <BasicContainer>
+            <BasicHeader
+              right={
+                <Pressable
+                  hitSlop={12}
+                  style={styles.lookAroundBtn}
+                  onPress={handleLookAround}
+                >
+                  <Text style={styles.lookAroundText}>둘러보기</Text>
+                </Pressable>
+              }
+            />
+            <View style={styles.container}>
+              <View style={styles.imageWrapper}>
+                <Image
+                  source={require("@/assets/images/openme.png")}
+                  style={styles.logoImg}
+                />
+              </View>
+              <View style={styles.inputWrapper}>
+                <BasicInput
+                  label="이메일"
+                  value={email}
+                  onChangeText={(text: string) =>
+                    handleAuthInput(text, setEmail, setEmailError)
+                  }
+                  errorMessage={emailError}
+                  placeholder="이메일을 입력해주세요"
+                />
+                <BasicInput
+                  label="비밀번호"
+                  isPassword={true}
+                  value={password}
+                  onChangeText={(text: string) =>
+                    handleAuthInput(text, setPassword, setPasswordError)
+                  }
+                  placeholder="비밀번호를 입력해주세요"
+                  maxLength={20}
+                  errorMessage={passwordError}
+                />
+                <BasicButton
+                  title="로그인"
+                  onPress={handleSignIn}
+                  style={styles.btnStyle}
+                />
+                <BasicButton
+                  title="회원가입"
+                  onPress={handleSignUp}
+                  style={styles.btnStyle}
+                  variant="outline"
+                />
+              </View>
+            </View>
+          </BasicContainer>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "space-between",
+  },
+  scrollStyle: {
+    flexGrow: 1,
+  },
+  lookAroundBtn: {},
+  lookAroundText: {
+    ...typography.body14SemiBold,
+    color: primaryColors.sixty,
   },
   imageWrapper: {
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 60,
+    marginTop: 35,
+  },
+  inputWrapper: {
+    marginBottom: 20,
   },
   logoImg: {
     width: 300,
@@ -69,6 +178,6 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   btnStyle: {
-    marginTop: 20,
+    marginTop: 10,
   },
 });
