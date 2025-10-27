@@ -1,45 +1,41 @@
-import { typography } from "@/constants/theme";
-import React from "react";
+import { primaryColors, typography } from "@/constants/theme";
+import React, { useState } from "react";
 import {
+  Pressable,
   StyleSheet,
   TextInput,
   TextInputProps,
-  TextStyle,
   View,
-  ViewStyle,
 } from "react-native";
 import BasicButton from "./BasicButton";
 import BasicText from "./BasicText";
 
-interface BasicInputProps extends TextInputProps {
-  // 레이블 (제목)
-  label?: string;
-  labelStyle?: TextStyle;
+import EyeCloseIcon from "@/assets/images/icons/eye_close.svg";
+import EyeOpenIcon from "@/assets/images/icons/eye_open.svg";
 
-  // 버튼 (중복확인 등)
+interface BasicInputProps extends TextInputProps {
+  label?: string;
+  required?: boolean;
+  isPassword?: boolean;
+  labelStyle?: object;
   buttonTitle?: string;
   onButtonPress?: () => void;
   buttonLoading?: boolean;
   buttonDisabled?: boolean;
-
-  // 유효성 검사
   errorMessage?: string;
   successMessage?: string;
-
-  // 글자수 제한
   maxLength?: number;
   showCharCount?: boolean;
-
-  // 커스텀 스타일
-  containerStyle?: ViewStyle;
-  inputStyle?: TextStyle;
-
-  // 현재 값 (글자수 표시용)
+  containerStyle?: object;
+  inputStyle?: object;
+  onBlur?: () => void;
   value?: string;
 }
 
 const BasicInput = ({
   label,
+  required,
+  isPassword = false,
   labelStyle,
   buttonTitle,
   onButtonPress,
@@ -51,6 +47,7 @@ const BasicInput = ({
   showCharCount = false,
   containerStyle,
   inputStyle,
+  onBlur,
   value,
   ...textInputProps
 }: BasicInputProps) => {
@@ -58,11 +55,16 @@ const BasicInput = ({
   const hasError = !!errorMessage;
   const hasSuccess = !!successMessage;
 
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
   return (
     <View style={[styles.container, containerStyle]}>
       {/* 레이블 */}
       {label && (
-        <BasicText style={[styles.label, labelStyle]}>{label}</BasicText>
+        <BasicText style={[styles.label, labelStyle]}>
+          {label}
+          <BasicText style={styles.requiredStyle}>{required && "*"}</BasicText>
+        </BasicText>
       )}
 
       {/* 입력 필드 + 버튼 */}
@@ -75,12 +77,26 @@ const BasicInput = ({
             hasSuccess && styles.inputSuccess,
             inputStyle,
           ]}
+          onBlur={onBlur}
           placeholderTextColor="#999"
           maxLength={maxLength}
           value={value}
+          secureTextEntry={isPassword && !passwordVisible}
           {...textInputProps}
         />
-
+        {isPassword && (
+          <Pressable
+            onPress={() => setPasswordVisible((v) => !v)}
+            style={styles.eyeButton}
+            hitSlop={12}
+          >
+            {passwordVisible ? (
+              <EyeOpenIcon width={20} height={20} />
+            ) : (
+              <EyeCloseIcon width={20} height={20} />
+            )}
+          </Pressable>
+        )}
         {/* 버튼 (있을 경우) */}
         {hasButton && (
           <BasicButton
@@ -125,8 +141,12 @@ const styles = StyleSheet.create({
   container: {
     marginBottom: 10,
   },
+  requiredStyle: {
+    ...typography.body16SemiBold,
+    color: primaryColors.sixty,
+  },
   label: {
-    ...typography.body14SemiBold,
+    ...typography.body16SemiBold,
     color: "#333",
     marginBottom: 8,
   },
@@ -156,8 +176,9 @@ const styles = StyleSheet.create({
     borderColor: "#34C759",
   },
   button: {
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    width: 90,
+    paddingVertical: 13,
+    paddingHorizontal: 14,
   },
   footer: {
     marginTop: 6,
@@ -167,20 +188,26 @@ const styles = StyleSheet.create({
     minHeight: 18,
   },
   errorText: {
-    fontSize: 12,
-    fontFamily: "Pretendard-Regular",
+    ...typography.caption12Regular,
     color: "#FF3B30",
     flex: 1,
   },
   successText: {
-    fontSize: 12,
-    fontFamily: "Pretendard-Regular",
-    color: "#34C759",
+    ...typography.caption12Regular,
+    color: primaryColors.sixty,
     flex: 1,
   },
   charCount: {
-    fontSize: 12,
-    fontFamily: "Pretendard-Regular",
+    ...typography.caption12Regular,
     color: "#999",
+  },
+  eyeButton: {
+    position: "absolute",
+    right: 8,
+    top: 0,
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1,
   },
 });
