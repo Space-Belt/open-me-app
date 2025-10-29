@@ -5,8 +5,10 @@ import BasicInput from "@/components/common/BasicInput";
 import { useSignUpForm } from "@/hooks/useSignUpform";
 import { isIOS } from "@/utils/public";
 import {
+  Image,
   Keyboard,
   KeyboardAvoidingView,
+  Pressable,
   ScrollView,
   StyleSheet,
   TouchableWithoutFeedback,
@@ -14,11 +16,18 @@ import {
 } from "react-native";
 
 import { emailSignUp } from "@/api/authController";
+import { uploadProfileImage } from "@/api/imageController";
 import { useAuth } from "@/hooks/useAuth";
+import { useImagePicker } from "@/hooks/useImagePicker";
 import { handleAuthInput, validatePassword } from "@/utils/auth";
 import { showOneButtonModal, showTwoButtonModal } from "@/utils/modal";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
+
+import CancelIcon from "@/assets/images/icons/close_icon.svg";
+import PhotoIcon from "@/assets/images/icons/photo_icon.svg";
+import BasicText from "@/components/common/BasicText";
+import { typography } from "@/constants/theme";
 
 export default function SignUpScreen() {
   const router = useRouter();
@@ -47,6 +56,8 @@ export default function SignUpScreen() {
     handleConfirmPasswordBlur,
   } = useSignUpForm();
 
+  const { images, removeImage, pickImages } = useImagePicker(1);
+
   const { login } = useAuth();
   // useMutation 호출
   const mutation = useMutation({
@@ -54,7 +65,18 @@ export default function SignUpScreen() {
       email: string;
       password: string;
       nickname: string;
-    }) => await emailSignUp(data.email, data.password, data.nickname),
+    }) => {
+      let photoURL = "";
+      if (images.length > 0) {
+        photoURL = await uploadProfileImage(images[0], email); // email이나 uid로 파일명 결정해도 됨
+      }
+      return await emailSignUp(
+        data.email,
+        data.password,
+        data.nickname,
+        photoURL
+      );
+    },
     onSuccess: (data) => {
       showTwoButtonModal(
         "회원가입 성공",
@@ -76,6 +98,7 @@ export default function SignUpScreen() {
                 email: data.user.email ?? "",
                 accessToken: data.token.accessToken,
                 refreshToken: data.token.refreshToken,
+                nickname: nickname,
                 expirationTime: data.token.expirationTime,
               };
               try {
@@ -89,7 +112,7 @@ export default function SignUpScreen() {
                   "로그인 오류",
                   "로그인 실패!\n죄송합니다.\n다시시도해주세요",
                   () => {
-                    router.push("/(auth)/signin");
+                    // router.push("/(auth)/signin");
                   }
                 );
                 throw err;
@@ -104,7 +127,7 @@ export default function SignUpScreen() {
         "로그인 오류",
         "로그인 실패!\n죄송합니다.\n다시시도해주세요",
         () => {
-          router.push("/(auth)/signin");
+          // router.push("/(auth)/signin");
         }
       );
     },
@@ -130,14 +153,44 @@ export default function SignUpScreen() {
             <BasicHeader title="회원가입" />
             <View style={styles.formStyle}>
               <View>
+                <View style={styles.profileWrapper}>
+                  <BasicText style={[styles.label]}>
+                    프로필 사진 (선택)
+                  </BasicText>
+                  <Pressable onPress={!images[0] ? pickImages : () => {}}>
+                    {!images[0] ? (
+                      <View style={styles.image}>
+                        <PhotoIcon width={50} height={50} />
+                      </View>
+                    ) : (
+                      <Image
+                        source={{ uri: images[0] }}
+                        resizeMode="cover"
+                        style={styles.image}
+                      />
+                    )}
+
+                    {images[0] && (
+                      <Pressable
+                        style={styles.deleteBtn}
+                        hitSlop={15}
+                        onPress={() => {
+                          removeImage(0);
+                        }}
+                      >
+                        <CancelIcon width={30} height={30} />
+                      </Pressable>
+                    )}
+                  </Pressable>
+                </View>
                 <BasicInput
                   label="닉네임"
                   autoFocus={true}
                   value={nickname}
                   required
                   onChangeText={handleNicknameChange}
-                  maxLength={15}
-                  placeholder="닉네임 입력 (2~15자)"
+                  maxLength={8}
+                  placeholder="닉네임 입력 (2~8자)"
                   errorMessage={nicknameError}
                   successMessage={nicknameSuccess}
                   onBlur={handleNicknameBlur}
@@ -201,9 +254,35 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  profileWrapper: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
   formStyle: {
     flex: 1,
     justifyContent: "space-between",
     paddingBottom: 20,
+  },
+  deleteBtn: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    paddingHorizontal: 5,
+    borderRadius: 12,
+    zIndex: 100,
+  },
+  label: {
+    ...typography.body16SemiBold,
+    color: "#333",
+    marginBottom: 8,
+  },
+  image: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#ccc",
+    marginBottom: 10,
   },
 });

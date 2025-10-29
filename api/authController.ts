@@ -6,6 +6,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  updateProfile,
   User,
 } from "firebase/auth";
 import {
@@ -37,7 +38,8 @@ export const checkNicknameDuplication = async (
 export const emailSignUp = async (
   email: string,
   password: string,
-  nickname: string
+  nickname: string,
+  photoURL?: string
 ): Promise<{ success: boolean; user: User; token: IUserTokenManager }> => {
   try {
     const userCredential = await createUserWithEmailAndPassword(
@@ -49,9 +51,19 @@ export const emailSignUp = async (
     const user = userCredential.user;
     const stsTokenManager: IUserTokenManager = (user as any).stsTokenManager;
 
+    console.log("여기까진 왔음");
+
+    await updateProfile(user, {
+      displayName: nickname,
+      photoURL: photoURL || null,
+    });
+
+    console.log("여기까진 못옴");
+
     await setDoc(doc(db, "users", user.uid), {
       email,
       nickname,
+      photoURL: photoURL || null,
       createdAt: serverTimestamp(),
     });
 
@@ -112,4 +124,22 @@ export const emailSignOut = async () => {
   } catch (error) {
     throw error;
   }
+};
+
+export const getCurrentUserInfo = () => {
+  const user = auth.currentUser;
+  if (!user) return null;
+
+  const stsTokenManager = (user as any).stsTokenManager;
+
+  return {
+    uid: user.uid,
+    email: user.email,
+    displayName: user.displayName,
+    photoURL: user.photoURL,
+    emailVerified: user.emailVerified,
+    accessToken: stsTokenManager?.accessToken,
+    refreshToken: stsTokenManager?.refreshToken,
+    expirationTime: stsTokenManager?.expirationTime,
+  };
 };
