@@ -1,7 +1,8 @@
-import { StyleSheet, View } from "react-native";
+import PostEditScreen from "@/components/screens/PostEditScreen";
+import { StyleSheet } from "react-native";
 
 export default function PostScreen() {
-  return <View style={styles.container}></View>;
+  return <PostEditScreen />;
 }
 
 const styles = StyleSheet.create({
