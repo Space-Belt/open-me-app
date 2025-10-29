@@ -308,6 +308,8 @@ const PostEditScreen = (props: IPostEditScreenProps) => {
                 </>
               ) : (
                 <PostDetailScreen
+                  currentIndex={currentIndex}
+                  setCurrentIndex={setCurrentIndex}
                   myInfo={auth}
                   title={title}
                   content={content}
