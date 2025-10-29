@@ -44,14 +44,16 @@ export const createPost = async ({
   return docRef.id; // 게시물 ID 반환
 };
 
-export const fetchPostsPaging = async (
-  lastDoc?: any
-): Promise<{ posts: IPostedData[]; lastDoc?: any }> => {
-  const postsQuery = lastDoc
+export const fetchPostsPaging = async ({
+  pageParam,
+}: {
+  pageParam?: any;
+}): Promise<{ posts: IPostedData[]; lastDoc?: any }> => {
+  const postsQuery = pageParam
     ? query(
         collection(db, "posts"),
         orderBy("createdAt", "desc"),
-        startAfter(lastDoc),
+        startAfter(pageParam),
         limit(POSTS_PAGE_SIZE)
       )
     : query(
@@ -66,8 +68,8 @@ export const fetchPostsPaging = async (
     ...doc.data(),
   })) as IPostedData[];
 
-  const newLastDoc = snapshot.docs[snapshot.docs.length - 1]; // 페이징 기준
-  console.log(JSON.stringify(posts, null, 2));
+  const newLastDoc = snapshot.docs[snapshot.docs.length - 1];
+
   return { posts, lastDoc: newLastDoc };
 };
 
