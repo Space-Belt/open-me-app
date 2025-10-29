@@ -1,11 +1,8 @@
-import { StyleSheet, View } from "react-native";
+import MainScreen from "@/components/screens/MainScreen";
+import { StyleSheet } from "react-native";
 
 export default function AuthHomeScreen() {
-  return (
-    <View>
-      <></>
-    </View>
-  );
+  return <MainScreen />;
 }
 
 const styles = StyleSheet.create({
