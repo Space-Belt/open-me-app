@@ -3,9 +3,10 @@ import CommentArea from "@/components/comments/CommentArea";
 import BasicContainer from "@/components/common/BasicContainer";
 import BasicHeader from "@/components/common/BasicHeader";
 import BasicInput from "@/components/common/BasicInput";
+import BasicText from "@/components/common/BasicText";
 import PhotoModal from "@/components/common/PhotoModal";
 import PostDetailScreen from "@/components/screens/PostDetailScreen";
-import { blackColors } from "@/constants/theme";
+import { blackColors, primaryColors, typography } from "@/constants/theme";
 import { useAuth } from "@/hooks/useAuth";
 import { useComments } from "@/hooks/useComments";
 import { showOneButtonModal } from "@/utils/modal";
@@ -16,12 +17,16 @@ import React, { useState } from "react";
 import {
   Keyboard,
   KeyboardAvoidingView,
+  Pressable,
   ScrollView,
   StyleSheet,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import CloseIcon from "@/assets/images/icons/close_icon.svg";
+import { IGetCommentData } from "@/types/comment";
 
 export default function PostDetail() {
   const insets = useSafeAreaInsets();
@@ -46,11 +51,36 @@ export default function PostDetail() {
     setCommentValue("");
   };
   const {
+    replyingTo,
+    setReplyingTo,
+    replyingToNick,
+    setReplyingToNick,
     commentValue,
     setCommentValue,
     addComment,
     isLoading: commentLoading,
+    editingCommentId,
+    setEditingCommentId,
+    deleteCommentMutation,
   } = useComments(postId, commentErrorHandler);
+
+  const handleEdit = (comment: IGetCommentData) => {
+    setEditingCommentId(comment.id);
+    setCommentValue(comment.content);
+    setReplyingTo(null);
+    setReplyingToNick(null);
+  };
+
+  const cancelEdit = () => {
+    setEditingCommentId(null);
+    setCommentValue("");
+  };
+
+  // 댓글 답글 버튼을 클릭
+  const handleReplyPress = (commentId: string, nickname: string) => {
+    setReplyingTo(commentId);
+    setReplyingToNick(nickname);
+  };
 
   const handlePhotoModal = () => {
     setShowPhotoModal((prev) => !prev);
@@ -59,14 +89,26 @@ export default function PostDetail() {
   const handleRegistComment = async () => {
     if (commentValue === "" || commentValue.length < 3) return;
     if (auth && auth.uid && auth.displayName) {
-      addComment.mutate({
-        postId,
-        content: commentValue,
-        authorUid: auth?.uid,
-        authorNickname: auth?.displayName,
-        authorPhotoURL: auth?.photoURL,
-      });
+      if (replyingTo && replyingToNick) {
+        addComment.mutate({
+          postId,
+          content: commentValue,
+          authorUid: auth?.uid,
+          authorNickname: auth?.displayName,
+          authorPhotoURL: auth?.photoURL,
+          parentId: replyingTo,
+        });
+      } else {
+        addComment.mutate({
+          postId,
+          content: commentValue,
+          authorUid: auth?.uid,
+          authorNickname: auth?.displayName,
+          authorPhotoURL: auth?.photoURL,
+        });
+      }
     } else {
+      return;
     }
   };
 
@@ -93,9 +135,15 @@ export default function PostDetail() {
                 contentOwner={post?.displayName}
                 contentOwnerPhotoURL={post?.photoURL}
                 setShowPhoto={setShowPhotoModal}
+                isMyPost={post?.uid === auth?.uid}
               />
               <View style={styles.divideLine} />
-              <CommentArea postId={postId} commentCount={post?.commentCount} />
+              <CommentArea
+                handleReplyPress={handleReplyPress}
+                handleEdit={handleEdit}
+                postId={postId}
+                commentCount={post?.commentCount}
+              />
             </BasicContainer>
           </ScrollView>
         </TouchableWithoutFeedback>
@@ -105,6 +153,33 @@ export default function PostDetail() {
             { paddingBottom: bottomInput ? 10 : insets.bottom },
           ]}
         >
+          {replyingTo && replyingToNick && (
+            <View style={styles.commentToStyle}>
+              <BasicText style={styles.commentToText}>
+                To {replyingToNick}
+              </BasicText>
+
+              <Pressable
+                style={styles.commentToClose}
+                onPress={() => {
+                  setReplyingTo(null);
+                  setReplyingToNick(null);
+                }}
+              >
+                <CloseIcon width={25} height={25} />
+              </Pressable>
+            </View>
+          )}
+          {editingCommentId && (
+            <View style={styles.commentToStyle}>
+              <BasicText style={styles.commentToText}>수정중입니다.</BasicText>
+
+              <Pressable style={styles.commentToClose} onPress={cancelEdit}>
+                <CloseIcon width={25} height={25} />
+              </Pressable>
+            </View>
+          )}
+
           {/* TextInput, 등록 버튼 등 */}
           <BasicInput
             onFocus={() => setBottomInput(true)}
@@ -114,6 +189,7 @@ export default function PostDetail() {
             value={commentValue}
             onChangeText={setCommentValue}
             containerStyle={styles.inputContainer}
+            placeholder="댓글을 입력해주세요"
           />
         </View>
         {showPhotoModal && (
@@ -152,10 +228,31 @@ const styles = StyleSheet.create({
     borderColor: "#eee",
     backgroundColor: "#fff",
   },
-
   inputContainer: {
-    width: "100%", // 추가: 컨테이너를 전체 너비로
-    marginBottom: 0, // 추가: 기본 marginBottom 제거
+    width: "100%",
+    marginBottom: 0,
+  },
+  commentToStyle: {
+    position: "absolute",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: primaryColors.sixty,
+    borderRadius: 10,
+    left: 16,
+    top: -50,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+  },
+  commentToText: {
+    ...typography.caption12SemiBold,
+    color: "#fff",
+  },
+  commentToClose: {
+    position: "absolute",
+    right: -35,
+    justifyContent: "center",
+    alignItems: "center",
   },
   divideLine: {
     width: "100%",
