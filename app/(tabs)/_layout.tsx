@@ -1,7 +1,11 @@
 import { primaryColors } from "@/constants/theme";
 import { Tabs } from "expo-router";
 import React from "react";
-import { Text } from "react-native";
+
+import HomeIcon from "@/assets/images/icons/home_icon.svg";
+import MyPageIcon from "@/assets/images/icons/my_page.svg";
+import MyPostIcon from "@/assets/images/icons/my_post.svg";
+import { Platform } from "react-native";
 
 export default function TabLayout() {
   return (
@@ -10,6 +14,11 @@ export default function TabLayout() {
         tabBarActiveTintColor: primaryColors.sixty,
         headerShown: false,
         tabBarShowLabel: false,
+        tabBarStyle: {
+          height: Platform.OS === "ios" ? 85 : 70,
+          paddingTop: 10,
+          paddingBottom: Platform.OS === "ios" ? 25 : 10,
+        },
       }}
     >
       <Tabs.Screen
@@ -17,9 +26,7 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color, focused }) => (
-            <Text style={{ color: focused ? primaryColors.sixty : "#888" }}>
-              홈
-            </Text>
+            <HomeIcon width={30} height={30} />
           ),
         }}
       />
@@ -28,9 +35,7 @@ export default function TabLayout() {
         options={{
           title: "MyPost",
           tabBarIcon: ({ color, focused }) => (
-            <Text style={{ color: focused ? primaryColors.sixty : "#888" }}>
-              내 게시물
-            </Text>
+            <MyPostIcon width={30} height={30} />
           ),
         }}
       />
@@ -39,9 +44,7 @@ export default function TabLayout() {
         options={{
           title: "MyPage",
           tabBarIcon: ({ color, focused }) => (
-            <Text style={{ color: focused ? primaryColors.sixty : "#888" }}>
-              마이페이지
-            </Text>
+            <MyPageIcon width={30} height={30} />
           ),
         }}
       />
