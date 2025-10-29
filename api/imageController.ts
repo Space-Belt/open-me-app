@@ -23,3 +23,21 @@ export const uploadProfileImage = async (
     throw e;
   }
 };
+
+export const uploadPostImages = async (
+  localUris: string[],
+  uid: string
+): Promise<string[]> => {
+  const uploadPromises = localUris.map(async (uri, idx) => {
+    const response = await fetch(uri);
+    if (!response.ok) throw new Error(`이미지 fetch 실패: ${response.status}`);
+    const blob = await response.blob();
+    // 2. Firebase Storage로 업로드
+    const fileRef = ref(storage, `posts/${uid}/${Date.now()}_${idx}.jpg`);
+    await uploadBytes(fileRef, blob);
+    // 3. 업로드 후 다운로드 URL 반환
+    return await getDownloadURL(fileRef);
+  });
+
+  return await Promise.all(uploadPromises);
+};
