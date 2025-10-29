@@ -102,7 +102,6 @@ const BasicInput = ({
           <BasicButton
             title={buttonTitle}
             onPress={onButtonPress || (() => {})}
-            loading={buttonLoading}
             disabled={buttonDisabled}
             size="small"
             style={styles.button}
@@ -162,8 +161,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 8,
     paddingHorizontal: 16,
-    fontSize: 16,
-    fontFamily: "Pretendard-Regular",
+    ...typography.body16Regular,
     backgroundColor: "#fff",
   },
   inputWithButton: {

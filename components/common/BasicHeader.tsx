@@ -24,9 +24,13 @@ const BasicHeader = ({
 }: BasicHeaderProps) => {
   const router = useRouter();
 
+  const canGoBack = router.canGoBack();
+
   const handleDefaultBack = () => {
     if (onLeftPress) return onLeftPress();
-    router.back();
+    if (router.canGoBack()) {
+      router.back();
+    }
   };
 
   return (
@@ -36,10 +40,12 @@ const BasicHeader = ({
           <Pressable onPress={onLeftPress ?? handleDefaultBack}>
             {left}
           </Pressable>
-        ) : (
+        ) : canGoBack ? (
           <Pressable onPress={handleDefaultBack}>
             <BackIcon />
           </Pressable>
+        ) : (
+          <></>
         )}
       </View>
       <View style={styles.center}>
@@ -58,6 +64,7 @@ const BasicHeader = ({
 
 const styles = StyleSheet.create({
   container: {
+    color: "#f2f2f2",
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 12,

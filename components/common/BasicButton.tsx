@@ -1,12 +1,6 @@
 import { primaryColors, typography } from "@/constants/theme";
 import React from "react";
-import {
-  ActivityIndicator,
-  Pressable,
-  StyleSheet,
-  TextStyle,
-  ViewStyle,
-} from "react-native";
+import { Pressable, StyleSheet, TextStyle, ViewStyle } from "react-native";
 import BasicText from "./BasicText";
 
 interface BasicButtonProps {
@@ -15,10 +9,10 @@ interface BasicButtonProps {
   variant?: "primary" | "secondary" | "outline";
   size?: "small" | "medium" | "large";
   disabled?: boolean;
-  loading?: boolean;
   style?: ViewStyle | ViewStyle[];
   textStyle?: TextStyle;
   width?: number;
+  custom?: React.ReactNode;
 }
 
 const BasicButton = ({
@@ -27,10 +21,10 @@ const BasicButton = ({
   variant = "primary",
   size = "medium",
   disabled = false,
-  loading = false,
   style,
   textStyle,
   width,
+  custom,
 }: BasicButtonProps) => {
   return (
     <Pressable
@@ -38,7 +32,7 @@ const BasicButton = ({
         styles.button,
         styles[variant],
         styles[size],
-        (disabled || loading) && styles.disabled,
+        disabled && styles.disabled,
         {
           width: width || "100%",
           opacity: pressed ? 0.7 : 1,
@@ -46,13 +40,10 @@ const BasicButton = ({
         style,
       ]}
       onPress={onPress}
-      disabled={disabled || loading}
+      disabled={disabled}
     >
-      {loading ? (
-        <ActivityIndicator
-          color={variant === "outline" ? "#007AFF" : "#fff"}
-          size="small"
-        />
+      {custom ? (
+        custom
       ) : (
         <BasicText
           style={[
