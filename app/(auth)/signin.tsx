@@ -27,6 +27,9 @@ import {
   View,
 } from "react-native";
 
+import GoogleIcon from "@/assets/images/icons/icon_google.svg";
+import { ISecureStoreAuthData } from "@/types/auth";
+
 export default function SignInScreen() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -40,14 +43,19 @@ export default function SignInScreen() {
     mutationFn: async (data: { email: string; password: string }) =>
       await emailSignIn(data.email, data.password),
     onSuccess: async (data) => {
+      console.log(data.user);
+
       if (data && data.user && data.token) {
-        const tokens = {
+        const tokens: ISecureStoreAuthData = {
           uid: data.user.uid,
           email: data.user.email ?? "",
           accessToken: data.token.accessToken,
           refreshToken: data.token.refreshToken,
           expirationTime: data.token.expirationTime,
+          displayName: data.user.displayName ?? "",
+          photoURL: data.user.photoURL ?? "",
         };
+
         await login(tokens);
         showOneButtonModal("로그인 성공", "로그인 되었습니다!", () => {
           router.replace("/(tabs)");
@@ -76,11 +84,11 @@ export default function SignInScreen() {
   };
 
   const handleSignUp = () => {
-    router.replace("/(auth)/signup");
+    router.navigate("/(auth)/signup");
   };
 
   const handleLookAround = () => {
-    router.navigate("/(auth)/home");
+    router.replace("/(auth)/home");
   };
 
   return (
@@ -142,6 +150,18 @@ export default function SignInScreen() {
                   style={styles.btnStyle}
                   variant="outline"
                 />
+                <BasicButton
+                  title={""}
+                  custom={
+                    <View style={styles.snsBtn}>
+                      <GoogleIcon />
+                      <Text style={styles.snsBtnText}>Google 로그인</Text>
+                    </View>
+                  }
+                  onPress={handleSignUp}
+                  style={styles.btnStyle}
+                  variant="outline"
+                />
               </View>
             </View>
           </BasicContainer>
@@ -179,5 +199,15 @@ const styles = StyleSheet.create({
   },
   btnStyle: {
     marginTop: 10,
+  },
+  snsBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+  },
+  snsBtnText: {
+    ...typography.headline20Bold,
+    color: primaryColors.sixty,
   },
 });
