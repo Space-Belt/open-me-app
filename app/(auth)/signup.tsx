@@ -31,7 +31,7 @@ import { typography } from "@/constants/theme";
 
 export default function SignUpScreen() {
   const router = useRouter();
-  const isSocialLogin = false;
+
   const {
     email,
     setEmail,
@@ -59,7 +59,8 @@ export default function SignUpScreen() {
   const { images, removeImage, pickImages } = useImagePicker(1);
 
   const { login } = useAuth();
-  // useMutation 호출
+
+  // 이메일 회원가입 뮤테이션
   const mutation = useMutation({
     mutationFn: async (data: {
       email: string;
@@ -192,53 +193,55 @@ export default function SignUpScreen() {
                   successMessage={nicknameSuccess}
                   onBlur={handleNicknameBlur}
                 />
-                {!isSocialLogin && (
-                  <>
-                    <BasicInput
-                      label="이메일"
-                      required
-                      value={email}
-                      onChangeText={(text: string) =>
-                        handleAuthInput(text, setEmail, setEmailError)
-                      }
-                      placeholder="이메일 입력"
-                      errorMessage={emailError}
-                      successMessage={emailSuccess}
-                      onBlur={handleEmailBlur}
-                    />
 
-                    <BasicInput
-                      label="비밀번호"
-                      required
-                      isPassword={true}
-                      value={password}
-                      onChangeText={(text: string) =>
-                        handleAuthInput(text, setPassword, setPasswordError)
-                      }
-                      placeholder="(영어, 숫자, 특수문자 포함 8자 이상)"
-                      maxLength={20}
-                      errorMessage={passwordError}
-                    />
-                    <BasicInput
-                      isPassword
-                      value={confirmPassword}
-                      onChangeText={(text: string) =>
-                        handleAuthInput(
-                          text,
-                          setConfirmPassword,
-                          setConfirmPasswordError
-                        )
-                      }
-                      onBlur={handleConfirmPasswordBlur}
-                      placeholder="비밀번호를 한번 더 입력해주세요"
-                      maxLength={20}
-                      errorMessage={confirmPasswordError}
-                      successMessage={confirmPasswordSuccess}
-                    />
-                  </>
-                )}
+                <BasicInput
+                  label="이메일"
+                  required
+                  value={email}
+                  onChangeText={(text: string) =>
+                    handleAuthInput(text, setEmail, setEmailError)
+                  }
+                  placeholder="이메일 입력"
+                  errorMessage={emailError}
+                  successMessage={emailSuccess}
+                  onBlur={handleEmailBlur}
+                />
+
+                <BasicInput
+                  label="비밀번호"
+                  required
+                  isPassword={true}
+                  value={password}
+                  onChangeText={(text: string) =>
+                    handleAuthInput(text, setPassword, setPasswordError)
+                  }
+                  placeholder="(영어, 숫자, 특수문자 포함 8자 이상)"
+                  maxLength={20}
+                  errorMessage={passwordError}
+                />
+                <BasicInput
+                  isPassword
+                  value={confirmPassword}
+                  onChangeText={(text: string) =>
+                    handleAuthInput(
+                      text,
+                      setConfirmPassword,
+                      setConfirmPasswordError
+                    )
+                  }
+                  onBlur={handleConfirmPasswordBlur}
+                  placeholder="비밀번호를 한번 더 입력해주세요"
+                  maxLength={20}
+                  errorMessage={confirmPasswordError}
+                  successMessage={confirmPasswordSuccess}
+                />
               </View>
-              <BasicButton title="가입하기" onPress={handleSignUp} />
+              <BasicButton
+                loading={mutation.isPending}
+                disabled={mutation.isPending}
+                title="가입하기"
+                onPress={handleSignUp}
+              />
             </View>
           </BasicContainer>
         </ScrollView>
