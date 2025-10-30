@@ -2,7 +2,6 @@ import { IGetPostedData } from "@/types/post";
 import { isIOS, SCREEN_WIDTH } from "@/utils/public";
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Image,
   Keyboard,
   KeyboardAvoidingView,
   Pressable,
@@ -21,7 +20,6 @@ import { useImagePicker } from "@/hooks/useImagePicker";
 import BasicInput from "../common/BasicInput";
 import BasicText from "../common/BasicText";
 
-import CancelIcon from "@/assets/images/icons/close_icon.svg";
 import PhotoIcon from "@/assets/images/icons/photo_icon.svg";
 
 import { useAuth } from "@/hooks/useAuth";
@@ -30,8 +28,9 @@ import { handleAuthInput } from "@/utils/auth";
 import { showOneButtonModal, showTwoButtonModal } from "@/utils/modal";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import Carousel from "react-native-reanimated-carousel";
 import BasicButton from "../common/BasicButton";
+import BasicIndicator from "../common/BasicIndicator";
+import ImageCarousel from "../common/ImageCarousel";
 import PhotoModal from "../common/PhotoModal";
 import PostDetailScreen from "./PostDetailScreen";
 
@@ -48,11 +47,24 @@ const INFORMATION =
   "- 위를 클릭하셔서 사진을 선택할 수 있습니다.\n- 사진은 최대 3장까지 등록가능합니다.";
 
 const PostEditScreen = (props: IPostEditScreenProps) => {
+  // 미리보기, 사진 크게 보기
+  const [showPreview, setShowPreview] = useState<boolean>(false);
+  const [showPhotoModal, setShowPhotoModal] = useState<boolean>(false);
+
+  // 등록될 내용 상태들
+  const [title, setTitle] = useState<string>(props?.post?.title ?? "");
+  const [titleError, setTitleError] = useState<string>();
+  const [content, setContent] = useState<string>(props?.post?.content ?? "");
+  const { images, setImages, pickImages, takePhoto } =
+    useImagePicker(MAX_IMAGES);
+
+  // 캐러셀 관리
+  const carouselRef = useRef<any>(null);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+
   const queryClient = useQueryClient();
   const router = useRouter();
-
   const { auth } = useAuth();
-
   // 등록 클릭, 등록 뮤테이션, 등록 이후 콜백
   const successCallback = (isSuccess: boolean) => {
     showOneButtonModal(
@@ -76,21 +88,26 @@ const PostEditScreen = (props: IPostEditScreenProps) => {
     auth?.displayName ?? "",
     auth?.photoURL ?? ""
   );
-  const handlePost = () => {
-    let isOkToGo = true;
+
+  // 유효성검사, 등로하기
+  const validatePost = () => {
+    let isValid = true;
+    let titleErr = "";
     if (title.length < 2 || title.length > 15) {
-      isOkToGo = false;
-      setTitleError("2~15자로 입력해주세요");
+      titleErr = "2~15 자로 입력해주세요";
+      isValid = false;
     }
-    if (content.length < 10 || content.length > 1000) {
-      isOkToGo = false;
-    }
-    if (!isOkToGo) {
+    setTitleError(titleErr);
+    return isValid;
+  };
+  const handlePost = () => {
+    if (!validatePost()) {
       showOneButtonModal(
         "입력 제한 예외",
-        "제목 - 2~15자\n내용 - 10~1000자\n확인해주세요",
+        "제목: 2~15자, 내용: 10~1000자\n확인해주세요",
         () => {}
       );
+      return;
     } else {
       createPostUpdatemutation.mutate({
         title,
@@ -100,21 +117,6 @@ const PostEditScreen = (props: IPostEditScreenProps) => {
       });
     }
   };
-
-  // 미리보기, 사진 크게 보기
-  const [showPreview, setShowPreview] = useState<boolean>(false);
-  const [showPhotoModal, setShowPhotoModal] = useState<boolean>(false);
-
-  // 등록될 내용 상태들
-  const [title, setTitle] = useState<string>(props?.post?.title ?? "");
-  const [titleError, setTitleError] = useState<string>();
-  const [content, setContent] = useState<string>(props?.post?.content ?? "");
-  const { images, setImages, pickImages, takePhoto } =
-    useImagePicker(MAX_IMAGES);
-
-  // 캐러셀 관리
-  const carouselRef = useRef<any>(null);
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   /// 사진 추가 및 삭제
   const handleAddImage = () => {
@@ -143,6 +145,8 @@ const PostEditScreen = (props: IPostEditScreenProps) => {
       );
     }
   };
+
+  // 사진 삭제
   const handleRemoveImage = (index: number) => {
     setImages((prevImages) => {
       const newImages = prevImages.filter((_, i) => i !== index);
@@ -164,12 +168,8 @@ const PostEditScreen = (props: IPostEditScreenProps) => {
   };
 
   // 미리보기, 사진보기
-  const handleShowPreview = () => {
-    setShowPreview((prev) => !prev);
-  };
-  const handlePhotoModal = () => {
-    setShowPhotoModal((prev) => !prev);
-  };
+  const handleShowPreview = () => setShowPreview((prev) => !prev);
+  const handlePhotoModal = () => setShowPhotoModal((prev) => !prev);
 
   // 뒤로 가기 버튼 커스텀
   const handleBackBtn = () => {
@@ -181,10 +181,14 @@ const PostEditScreen = (props: IPostEditScreenProps) => {
   };
 
   useEffect(() => {
-    if (props && props.post && props.post.imageUrls) {
+    if (props?.post?.imageUrls?.length) {
       setImages([...props.post.imageUrls]);
     }
-  }, [props]);
+  }, [props?.post?.imageUrls]);
+
+  if (createPostUpdatemutation.isPending) {
+    return <BasicIndicator text="등록중이에요" />;
+  }
 
   return (
     <KeyboardAvoidingView
@@ -228,44 +232,14 @@ const PostEditScreen = (props: IPostEditScreenProps) => {
                       </Pressable>
                     ) : (
                       <>
-                        <Carousel
-                          loop={false}
+                        <ImageCarousel
                           ref={carouselRef}
-                          width={IMAGE_WIDTH}
-                          height={IMAGE_WIDTH}
-                          data={images}
-                          onSnapToItem={(index) => setCurrentIndex(index)}
-                          renderItem={({ item, index }) => (
-                            <Pressable
-                              onPress={handleAddImage}
-                              style={styles.imageContainer}
-                            >
-                              <Image
-                                source={{ uri: item }}
-                                style={styles.image}
-                              />
-                              <Pressable
-                                style={styles.deleteBtn}
-                                onPress={() => handleRemoveImage(index)}
-                              >
-                                <CancelIcon width={35} height={35} />
-                              </Pressable>
-                            </Pressable>
-                          )}
+                          currentIndex={currentIndex}
+                          setCurrentIndex={setCurrentIndex}
+                          images={images}
+                          onAddImage={handleAddImage}
+                          onRemoveImage={handleRemoveImage}
                         />
-                        <View style={styles.indicatorWrapper}>
-                          {images.map((_, i) => (
-                            <View
-                              key={i}
-                              style={[
-                                styles.indicatorCircle,
-                                i === currentIndex
-                                  ? styles.indicatorActive
-                                  : styles.indicatorInactive,
-                              ]}
-                            />
-                          ))}
-                        </View>
                       </>
                     )}
 
