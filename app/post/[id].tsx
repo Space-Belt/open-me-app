@@ -11,7 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useComments } from "@/hooks/useComments";
 import { showOneButtonModal } from "@/utils/modal";
 import { isIOS, SCREEN_WIDTH } from "@/utils/public";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -40,7 +40,7 @@ export default function PostDetail() {
   const [showPhotoModal, setShowPhotoModal] = useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
-  const { data: post, isLoading } = useQuery({
+  const { data: post } = useQuery({
     queryKey: ["post", postId],
     queryFn: () => fetchPostById(postId),
     enabled: !!postId,
@@ -50,6 +50,12 @@ export default function PostDetail() {
     showOneButtonModal("오류", "댓글작업 중\n오류가 발생했습니다.", () => {});
     setCommentValue("");
   };
+
+  const queryClient = useQueryClient();
+  const handleSuccessCallback = () => {
+    queryClient.invalidateQueries({ queryKey: ["myposts", auth?.uid] });
+    queryClient.invalidateQueries({ queryKey: ["myStats", auth?.uid] });
+  };
   const {
     replyingTo,
     setReplyingTo,
@@ -58,11 +64,9 @@ export default function PostDetail() {
     commentValue,
     setCommentValue,
     addComment,
-    isLoading: commentLoading,
     editingCommentId,
     setEditingCommentId,
-    deleteCommentMutation,
-  } = useComments(postId, commentErrorHandler);
+  } = useComments(postId, commentErrorHandler, handleSuccessCallback);
 
   const handleEdit = (comment: IGetCommentData) => {
     setEditingCommentId(comment.id);
@@ -127,22 +131,23 @@ export default function PostDetail() {
               <PostDetailScreen
                 currentIndex={currentIndex}
                 setCurrentIndex={setCurrentIndex}
-                content={post?.content}
-                title={post?.title}
-                imageUrls={post?.imageUrls}
+                content={post?.content || ""}
+                title={post?.title || ""}
+                imageUrls={post?.imageUrls || []}
                 isPreview={false}
-                myInfo={null}
+                myInfo={auth}
                 contentOwner={post?.displayName}
                 contentOwnerPhotoURL={post?.photoURL}
                 setShowPhoto={setShowPhotoModal}
                 isMyPost={post?.uid === auth?.uid}
+                postId={postId}
               />
               <View style={styles.divideLine} />
               <CommentArea
                 handleReplyPress={handleReplyPress}
                 handleEdit={handleEdit}
                 postId={postId}
-                commentCount={post?.commentCount}
+                commentCount={post?.commentCount || 0}
               />
             </BasicContainer>
           </ScrollView>
