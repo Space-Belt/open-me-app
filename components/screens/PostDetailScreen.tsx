@@ -125,7 +125,7 @@ const PostDetailScreen = ({
 
   return (
     <>
-      <View style={[styles.container, !isPreview && styles.preview]}>
+      <View style={[!isPreview && styles.preview]}>
         <View
           style={[
             styles.carouselWrapper,
@@ -233,9 +233,6 @@ const PostDetailScreen = ({
 export default PostDetailScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    // flex: 1,
-  },
   preview: {
     paddingHorizontal: 16,
   },
@@ -276,10 +273,6 @@ const styles = StyleSheet.create({
     width: "100%",
     textAlign: "left",
     marginTop: 4,
-  },
-  previewTitleContainer: {
-    borderRadius: 6,
-    paddingHorizontal: 12,
   },
   titleSection: {
     flexDirection: "row",

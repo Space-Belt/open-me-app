@@ -41,7 +41,7 @@ const MainScreen = () => {
     initialPageParam: undefined,
   });
 
-  // 모든 페이지의 posts를 하나의 배열로 합치기
+  // 포스트 하나로 합치기
   const posts = data?.pages.flatMap((page) => page.posts) ?? [];
 
   const loadMore = () => {
@@ -119,11 +119,6 @@ const MainScreen = () => {
 export default MainScreen;
 
 const styles = StyleSheet.create({
-  logoImg: {
-    width: 50,
-    height: 50 * 0.6,
-    resizeMode: "cover",
-  },
   container: { paddingHorizontal: 0 },
   headerContainer: { paddingHorizontal: 16 },
   lookAroundText: {
