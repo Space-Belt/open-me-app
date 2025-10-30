@@ -8,12 +8,19 @@ module.exports = {
     scheme: "openmeapp",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
+
     ios: {
       supportsTablet: true,
       bundleIdentifier: "com.app.openme",
+      infoPlist: {
+        NSCameraUsageDescription:
+          "사진을 촬영하여 업로드하기 위해 카메라 접근 권한이 필요합니다.",
+        NSPhotoLibraryUsageDescription:
+          "사진을 게시하기 위해 사진첩 접근 권한이 필요합니다.",
+      },
     },
     android: {
-      package: "com.app.ddokgu",
+      package: "com.app.openme",
       adaptiveIcon: {
         backgroundColor: "#E6F4FE",
         foregroundImage: "./assets/images/android-icon-foreground.png",
@@ -22,6 +29,16 @@ module.exports = {
       },
       edgeToEdgeEnabled: true,
       predictiveBackGestureEnabled: false,
+      permissions: [
+        "android.permission.CAMERA",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.INTERNET",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.FOREGROUND_SERVICE",
+      ],
     },
     web: {
       output: "static",
