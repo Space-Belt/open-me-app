@@ -2,13 +2,26 @@ import { blackColors, primaryColors, typography } from "@/constants/theme";
 import { ISecureStoreAuthData } from "@/types/auth";
 import { SCREEN_WIDTH } from "@/utils/public";
 import dayjs from "dayjs";
-import React, { useState } from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import React from "react";
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 
+import EmptyHeart from "@/assets/images/icons/empty_heart.svg";
+import HeartIcon from "@/assets/images/icons/heart_icon.svg";
+
 import UserIcon from "@/assets/images/icons/user_icon.svg";
+import { usePostLike } from "@/hooks/usePostLike";
+import usePostMutation from "@/hooks/usePostMutation";
+import { showOneButtonModal, showTwoButtonModal } from "@/utils/modal";
+import { useRouter } from "expo-router";
 import BasicText from "../common/BasicText";
-import PhotoModal from "../common/PhotoModal";
 
 type Props = {
   myInfo: ISecureStoreAuthData | null;
@@ -18,6 +31,8 @@ type Props = {
   isPreview: boolean;
   currentIndex: number;
   setCurrentIndex: React.Dispatch<React.SetStateAction<number>>;
+  isMyPost: boolean;
+  postId?: string;
   setShowPhoto?: React.Dispatch<React.SetStateAction<boolean>>;
   contentOwner?: string;
   contentOwnerPhotoURL?: string;
@@ -36,20 +51,76 @@ const PostDetailScreen = ({
   isPreview,
   currentIndex,
   setCurrentIndex,
+  isMyPost,
+  postId,
   setShowPhoto,
   contentOwner,
   contentOwnerPhotoURL,
 }: Props) => {
-  // const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const router = useRouter();
+  const successCallback = () => {
+    showOneButtonModal("삭제", "삭제 성공!", () => {
+      router.replace("/(tabs)");
+    });
+  };
 
-  const [showPhotoModal, setShowPhotoModal] = useState<boolean>(false);
+  const { deleteMutation } = usePostMutation(successCallback);
+
+  const { likedByMe, toggleLike } = usePostLike(postId, myInfo?.uid);
 
   const handleShowPhotoModal = () => {
     if (setShowPhoto) {
       setShowPhoto((prev) => !prev);
-    } else {
-      setShowPhotoModal((prev) => !prev);
     }
+  };
+
+  const handleLikePost = () => {
+    if (isPreview) return;
+    if (myInfo?.uid) {
+      toggleLike();
+    } else {
+      showTwoButtonModal(
+        "로그인필요",
+        "로그인이 필요해요\n로그인 하시겠어요??",
+        [
+          {
+            label: "나중에",
+            variant: "outline",
+            onPress: () => {},
+          },
+          {
+            label: "로그인",
+            variant: "primary",
+            onPress: () => {
+              router.navigate("/(auth)/signin");
+            },
+          },
+        ]
+      );
+    }
+  };
+
+  const handleDeletePost = () => {
+    showTwoButtonModal("삭제", "정말로 삭제하시겠어요?", [
+      {
+        label: "나중에",
+        variant: "outline",
+        onPress: () => {},
+      },
+      {
+        label: "삭제",
+        variant: "primary",
+        onPress: () => {
+          if (postId) {
+            deleteMutation.mutate(postId);
+          }
+        },
+      },
+    ]);
+  };
+
+  const handleEditPost = () => {
+    router.push(`/post/${postId}/edit`);
   };
 
   return (
@@ -124,19 +195,37 @@ const PostDetailScreen = ({
               )}
             </View>
           </View>
-          <BasicText style={styles.contentStyle}>
-            {content ? content : DUMMY_TEXT}
-          </BasicText>
+          <View>
+            <BasicText style={styles.contentStyle}>
+              {content ? content : DUMMY_TEXT}
+            </BasicText>
+            <View style={styles.likeEditDeleteContainer}>
+              <TouchableOpacity
+                hitSlop={5}
+                onPress={handleLikePost}
+                style={styles.likeBtn}
+              >
+                {likedByMe ? (
+                  <HeartIcon width={15} height={15} />
+                ) : (
+                  <EmptyHeart width={15} height={15} />
+                )}
+                <BasicText style={styles.likeText}>좋아요</BasicText>
+              </TouchableOpacity>
+              {isMyPost && !isPreview && (
+                <View style={styles.editDeleteContainer}>
+                  <Pressable hitSlop={5} onPress={handleEditPost}>
+                    <BasicText style={styles.smallBtn}>수정</BasicText>
+                  </Pressable>
+                  <Pressable hitSlop={5} onPress={handleDeletePost}>
+                    <BasicText style={styles.smallBtn}>삭제</BasicText>
+                  </Pressable>
+                </View>
+              )}
+            </View>
+          </View>
         </View>
       </View>
-
-      {showPhotoModal && (
-        <PhotoModal
-          handleClose={handleShowPhotoModal}
-          imageUrls={imageUrls}
-          initialIndex={currentIndex}
-        />
-      )}
     </>
   );
 };
@@ -231,5 +320,33 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     color: blackColors.seventy,
     minHeight: 150,
+  },
+
+  likeEditDeleteContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingBottom: 10,
+  },
+  likeBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+  },
+  likeText: {
+    ...typography.body14SemiBold,
+    color: "#9c9c9c",
+  },
+  editDeleteContainer: {
+    flexDirection: "row",
+    alignSelf: "flex-end",
+    gap: 20,
+    paddingHorizontal: 4,
+    paddingVertical: 8,
+  },
+  smallBtn: {
+    ...typography.caption12SemiBold,
+    color: blackColors.eighty,
+    textDecorationLine: "underline",
   },
 });
