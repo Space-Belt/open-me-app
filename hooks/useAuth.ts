@@ -47,7 +47,6 @@ export const useAuth = () => {
       await SecureStore.deleteItemAsync(KEY);
       setAuth(null);
       setIsAuthenticated(false);
-      console.log("로그아웃 성공 !!");
       return true;
     } catch (e) {
       console.error("로그아웃 실패:", e);

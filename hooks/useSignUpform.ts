@@ -68,6 +68,7 @@ export const useSignUpForm = () => {
     emailSuccess,
     nickname,
     nicknameError,
+    setNicknameError,
     nicknameSuccess,
     password,
     setPassword,

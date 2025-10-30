@@ -37,7 +37,6 @@ export const useImagePicker = (imageCount = 3) => {
 
   // 사진첩 멀티 선택, 선택한 사진 URI 배열 상태에 추가
   const pickImages = async (): Promise<void> => {
-    console.log(imageCount);
     const ok = await checkPermission("gallery");
     if (!ok) return;
     const result = await ImagePicker.launchImageLibraryAsync({

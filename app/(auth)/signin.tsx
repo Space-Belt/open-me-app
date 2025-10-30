@@ -27,7 +27,6 @@ import {
   View,
 } from "react-native";
 
-import GoogleIcon from "@/assets/images/icons/icon_google.svg";
 import { ISecureStoreAuthData } from "@/types/auth";
 
 export default function SignInScreen() {
@@ -43,8 +42,6 @@ export default function SignInScreen() {
     mutationFn: async (data: { email: string; password: string }) =>
       await emailSignIn(data.email, data.password),
     onSuccess: async (data) => {
-      console.log(data.user);
-
       if (data && data.user && data.token) {
         const tokens: ISecureStoreAuthData = {
           uid: data.user.uid,
@@ -61,7 +58,6 @@ export default function SignInScreen() {
           router.replace("/(tabs)");
         });
       }
-      console.log(JSON.stringify(data, null, 2));
       if (data && data.message) {
         showOneButtonModal("로그인 실패", data.message, () => {});
       }
@@ -146,18 +142,6 @@ export default function SignInScreen() {
                 />
                 <BasicButton
                   title="회원가입"
-                  onPress={handleSignUp}
-                  style={styles.btnStyle}
-                  variant="outline"
-                />
-                <BasicButton
-                  title={""}
-                  custom={
-                    <View style={styles.snsBtn}>
-                      <GoogleIcon />
-                      <Text style={styles.snsBtnText}>Google 로그인</Text>
-                    </View>
-                  }
                   onPress={handleSignUp}
                   style={styles.btnStyle}
                   variant="outline"

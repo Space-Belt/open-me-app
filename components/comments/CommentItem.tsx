@@ -26,10 +26,6 @@ const CommentItem = ({
   isReply,
   myId,
 }: Props) => {
-  if (isReply) {
-    console.log(data);
-  }
-
   const handleDeleteBtn = () => {
     showTwoButtonModal("삭제", "댓글을 삭제하시겠습니까?", [
       {
