@@ -6,7 +6,6 @@ import BasicInput from "@/components/common/BasicInput";
 import BasicText from "@/components/common/BasicText";
 import PhotoModal from "@/components/common/PhotoModal";
 import PostDetailScreen from "@/components/screens/PostDetailScreen";
-import { blackColors, primaryColors, typography } from "@/constants/theme";
 import { useAuth } from "@/hooks/useAuth";
 import { useComments } from "@/hooks/useComments";
 import { showOneButtonModal } from "@/utils/modal";
@@ -26,6 +25,8 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import CloseIcon from "@/assets/images/icons/close_icon.svg";
+import BasicIndicator from "@/components/common/BasicIndicator";
+import { blackColors, primaryColors, typography } from "@/constants/theme";
 import { IGetCommentData } from "@/types/comment";
 
 export default function PostDetail() {
@@ -40,18 +41,18 @@ export default function PostDetail() {
   const [showPhotoModal, setShowPhotoModal] = useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
-  const { data: post } = useQuery({
+  const { data: post, isLoading: postLoading } = useQuery({
     queryKey: ["post", postId],
     queryFn: () => fetchPostById(postId),
     enabled: !!postId,
   });
+  const queryClient = useQueryClient();
 
   const commentErrorHandler = () => {
     showOneButtonModal("오류", "댓글작업 중\n오류가 발생했습니다.", () => {});
     setCommentValue("");
   };
 
-  const queryClient = useQueryClient();
   const handleSuccessCallback = () => {
     queryClient.invalidateQueries({ queryKey: ["myposts", auth?.uid] });
     queryClient.invalidateQueries({ queryKey: ["myStats", auth?.uid] });
@@ -86,35 +87,27 @@ export default function PostDetail() {
     setReplyingToNick(nickname);
   };
 
-  const handlePhotoModal = () => {
-    setShowPhotoModal((prev) => !prev);
-  };
+  const handlePhotoModal = () => setShowPhotoModal((prev) => !prev);
 
+  // 댓글 등록
   const handleRegistComment = async () => {
     if (commentValue === "" || commentValue.length < 3) return;
-    if (auth && auth.uid && auth.displayName) {
-      if (replyingTo && replyingToNick) {
-        addComment.mutate({
-          postId,
-          content: commentValue,
-          authorUid: auth?.uid,
-          authorNickname: auth?.displayName,
-          authorPhotoURL: auth?.photoURL,
-          parentId: replyingTo,
-        });
-      } else {
-        addComment.mutate({
-          postId,
-          content: commentValue,
-          authorUid: auth?.uid,
-          authorNickname: auth?.displayName,
-          authorPhotoURL: auth?.photoURL,
-        });
-      }
-    } else {
-      return;
-    }
+    if (!(auth && auth.uid && auth.displayName)) return;
+    const commentPayload = {
+      postId,
+      content: commentValue,
+      authorUid: auth?.uid,
+      authorNickname: auth?.displayName,
+      authorPhotoURL: auth?.photoURL,
+      parentId: replyingTo || undefined,
+    };
+
+    addComment.mutate(commentPayload);
   };
+
+  if (postLoading || addComment.isPending) {
+    return <BasicIndicator type="spinner" />;
+  }
 
   /** 본인꺼 삭제 수정 가능해야합니디 !!!!! */
   return (
@@ -184,8 +177,6 @@ export default function PostDetail() {
               </Pressable>
             </View>
           )}
-
-          {/* TextInput, 등록 버튼 등 */}
           <BasicInput
             onFocus={() => setBottomInput(true)}
             onBlur={() => setBottomInput(false)}
@@ -199,7 +190,7 @@ export default function PostDetail() {
         </View>
         {showPhotoModal && (
           <PhotoModal
-            imageUrls={post?.imageUrls}
+            imageUrls={post?.imageUrls ? post?.imageUrls : []}
             handleClose={handlePhotoModal}
             initialIndex={currentIndex}
           />
