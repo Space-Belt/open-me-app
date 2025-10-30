@@ -1,4 +1,4 @@
-import { db } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { IPostedData } from "@/types/post";
 import { POSTS_PAGE_SIZE } from "@/utils/public";
 import {
@@ -12,6 +12,25 @@ import {
   startAfter,
   where,
 } from "firebase/firestore";
+
+// 내정보 가져오는 간단 함수
+export const getCurrentUserInfo = () => {
+  const user = auth.currentUser;
+  if (!user) return null;
+
+  const stsTokenManager = (user as any).stsTokenManager;
+
+  return {
+    uid: user.uid,
+    email: user.email,
+    displayName: user.displayName,
+    photoURL: user.photoURL,
+    emailVerified: user.emailVerified,
+    accessToken: stsTokenManager?.accessToken,
+    refreshToken: stsTokenManager?.refreshToken,
+    expirationTime: stsTokenManager?.expirationTime,
+  };
+};
 
 // 내 게시물 개수
 export const getMyPostsCount = async (uid: string): Promise<number> => {

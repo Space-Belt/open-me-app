@@ -132,24 +132,6 @@ export const emailSignOut = async () => {
   }
 };
 
-export const getCurrentUserInfo = () => {
-  const user = auth.currentUser;
-  if (!user) return null;
-
-  const stsTokenManager = (user as any).stsTokenManager;
-
-  return {
-    uid: user.uid,
-    email: user.email,
-    displayName: user.displayName,
-    photoURL: user.photoURL,
-    emailVerified: user.emailVerified,
-    accessToken: stsTokenManager?.accessToken,
-    refreshToken: stsTokenManager?.refreshToken,
-    expirationTime: stsTokenManager?.expirationTime,
-  };
-};
-
 export const updateUserProfile = async ({
   uid,
   nickname,

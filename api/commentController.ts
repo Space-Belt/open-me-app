@@ -23,7 +23,6 @@ export const createComment = async ({
   authorPhotoURL,
   parentId = undefined,
 }: ICreateCommentInput) => {
-  console.log("댓글 달기 돌아요1111");
   const ref = collection(db, "posts", postId, "comments");
   await addDoc(ref, {
     content,
@@ -36,11 +35,8 @@ export const createComment = async ({
     likeCount: 0,
     isDeleted: false,
   });
-  console.log("댓글 달기 돌아요22222");
-  // 2. 상위 post 문서의 commentCount 증가 (트랜잭션 또는 updateDoc)
   const postRef = doc(db, "posts", postId);
   await updateDoc(postRef, { commentCount: increment(1) });
-  console.log("sdfsdfdsf");
 };
 
 // 댓글 다 가져오기
