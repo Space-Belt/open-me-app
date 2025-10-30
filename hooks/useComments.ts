@@ -9,7 +9,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 // postId별 댓글 관리
-export function useComments(postId: string, callBack: () => void) {
+export function useComments(
+  postId: string,
+  callBack: () => void,
+  successCallBack: () => void
+) {
   const queryClient = useQueryClient();
 
   const [commentValue, setCommentValue] = useState<string>("");
@@ -44,6 +48,7 @@ export function useComments(postId: string, callBack: () => void) {
       queryClient.invalidateQueries({ queryKey: ["comments", postId] });
       queryClient.invalidateQueries({ queryKey: ["post", postId] });
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      successCallBack();
     },
     onError: callBack,
   });
@@ -54,6 +59,7 @@ export function useComments(postId: string, callBack: () => void) {
       queryClient.invalidateQueries({ queryKey: ["comments", postId] });
       queryClient.invalidateQueries({ queryKey: ["post", postId] });
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      successCallBack();
     },
     onError: callBack,
   });
