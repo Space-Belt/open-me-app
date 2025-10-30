@@ -38,6 +38,7 @@ export default function SignInScreen() {
 
   const { login } = useAuth();
 
+  // 로그인 뮤테이션
   const mutation = useMutation({
     mutationFn: async (data: { email: string; password: string }) =>
       await emailSignIn(data.email, data.password),
@@ -66,23 +67,23 @@ export default function SignInScreen() {
       showOneButtonModal("로그인 실패", "로그인 실패했습니다!", () => {});
     },
   });
-
   const handleSignIn = async () => {
-    const pwdError = validatePassword(password);
-    const emailError = validateEmailFormat(email);
-    setPasswordError(pwdError);
-    if (!emailError) {
+    const emailValidationError = validateEmailFormat(email);
+    const pwdValidationError = validatePassword(password);
+    setPasswordError(pwdValidationError);
+    if (!emailValidationError) {
       setEmailError("이메일을 확인해주세요.");
     }
-    if (pwdError) return;
+    if (pwdValidationError) return;
 
     mutation.mutate({ email, password });
   };
 
+  // 가입하기 이동
   const handleSignUp = () => {
     router.navigate("/(auth)/signup");
   };
-
+  // 둘러보기
   const handleLookAround = () => {
     router.replace("/(auth)/home");
   };
@@ -91,18 +92,14 @@ export default function SignInScreen() {
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={isIOS ? "padding" : undefined}
-      keyboardVerticalOffset={64}
+      keyboardVerticalOffset={10}
     >
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <ScrollView contentContainerStyle={styles.scrollStyle}>
           <BasicContainer>
             <BasicHeader
               right={
-                <Pressable
-                  hitSlop={12}
-                  style={styles.lookAroundBtn}
-                  onPress={handleLookAround}
-                >
+                <Pressable hitSlop={12} onPress={handleLookAround}>
                   <Text style={styles.lookAroundText}>둘러보기</Text>
                 </Pressable>
               }
@@ -139,6 +136,8 @@ export default function SignInScreen() {
                   title="로그인"
                   onPress={handleSignIn}
                   style={styles.btnStyle}
+                  loading={mutation.isPending}
+                  disabled={mutation.isPending}
                 />
                 <BasicButton
                   title="회원가입"
@@ -163,7 +162,6 @@ const styles = StyleSheet.create({
   scrollStyle: {
     flexGrow: 1,
   },
-  lookAroundBtn: {},
   lookAroundText: {
     ...typography.body14SemiBold,
     color: primaryColors.sixty,
@@ -171,27 +169,17 @@ const styles = StyleSheet.create({
   imageWrapper: {
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 35,
+    marginTop: 80,
   },
   inputWrapper: {
     marginBottom: 20,
   },
   logoImg: {
-    width: 300,
-    height: 300 * 0.6,
+    width: 240,
+    height: 240 * 0.6,
     resizeMode: "cover",
   },
   btnStyle: {
     marginTop: 10,
-  },
-  snsBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 10,
-  },
-  snsBtnText: {
-    ...typography.headline20Bold,
-    color: primaryColors.sixty,
   },
 });
