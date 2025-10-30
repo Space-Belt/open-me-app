@@ -6,17 +6,25 @@ import { useAuth } from "@/hooks/useAuth";
 import { showOneButtonModal, showTwoButtonModal } from "@/utils/modal";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { ActivityIndicator, Image, StyleSheet, View } from "react-native";
+import {
+  ActivityIndicator,
+  Button,
+  Image,
+  StyleSheet,
+  View,
+} from "react-native";
 
 import SubLogo from "@/assets/images/icons/sub_logo.svg";
 import BasicText from "@/components/common/BasicText";
 import { blackColors, primaryColors, typography } from "@/constants/theme";
 import { SCREEN_WIDTH } from "@/utils/public";
 
+import { emailSignOut } from "@/api/authController";
 import MyPostIcon from "@/assets/images/icons/list_icon.svg";
 import CommentIcon from "@/assets/images/icons/message_icon.svg";
 import MypageButton from "@/components/mypage/MypageButton";
 import { useDeleteAccount } from "@/hooks/useDeleteAccount";
+import { useFirebaseUser } from "@/hooks/useFirebaseUser";
 
 const PADDING_HORIZONTAL = 32;
 const GAP = 12;
@@ -37,18 +45,16 @@ export default function MyPageScreen() {
     enabled: !!auth?.uid,
   });
 
-  const mutation = useMutation({
-    mutationFn: async () => {},
+  const logoutMutation = useMutation({
+    mutationFn: emailSignOut,
     onSuccess: async () => {
-      showOneButtonModal("로그아웃", "로그아웃 되었습니다!", () => {
-        logout();
+      showOneButtonModal("로그아웃", "로그아웃 되었습니다!", async () => {
+        await logout();
         router.replace("/(auth)/signin");
       });
     },
-    onError: (error) => {
-      showOneButtonModal("로그아웃", "로그아웃에 실패했습니다!", () => {
-        router.replace("/(auth)/signin");
-      });
+    onError: () => {
+      showOneButtonModal("로그아웃", "로그아웃에 실패했습니다!", () => {});
     },
   });
 
@@ -67,7 +73,7 @@ export default function MyPageScreen() {
         label: "로그아웃",
         variant: "primary",
         onPress: async () => {
-          mutation.mutate();
+          logoutMutation.mutate();
         },
       },
     ]);
@@ -95,7 +101,22 @@ export default function MyPageScreen() {
     router.push("/user/edit-profile");
   };
 
-  if (isLoading) {
+  const user = useFirebaseUser();
+
+  if (!user) {
+    // 로그인 안된 상태이므로 로그인 화면 또는 메시지
+    return (
+      <View style={styles.errorContainer}>
+        <BasicText>로그인이 만료되었습니다.</BasicText>
+        <Button
+          title="로그인 화면으로 이동"
+          onPress={() => router.replace("/(auth)/signin")}
+        />
+      </View>
+    );
+  }
+
+  if (isLoading || logoutMutation.isPending || leaveMutation.isPending) {
     return <ActivityIndicator />;
   }
 
@@ -178,6 +199,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
   },
   topContainer: {
+    marginTop: 10,
     paddingHorizontal: 16,
   },
   profileContainer: {
@@ -230,7 +252,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0.5, height: 0.75 },
     shadowOpacity: 0.05,
     shadowRadius: 5,
-    elevation: 7, // Android용 그림자
+    elevation: 7,
     backgroundColor: "#fff",
   },
   activityTitle: {
@@ -249,5 +271,10 @@ const styles = StyleSheet.create({
 
   bottomContainer: {
     paddingHorizontal: 16,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
