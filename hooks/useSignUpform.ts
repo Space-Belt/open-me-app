@@ -6,7 +6,7 @@ import {
 import { validateEmailFormat, validateNickname } from "@/utils/auth";
 import { useState } from "react";
 
-// 회원 가입 훅
+/********** 회원가입 관련 훅 **********/
 const useSignUpForm = () => {
   // state
   const [email, setEmail] = useState("");
@@ -25,13 +25,13 @@ const useSignUpForm = () => {
   const [confirmPasswordSuccess, setConfirmPasswordSuccess] =
     useState<string>();
 
-  // 닉네임 바꾸기
+  /********** 닉네임 수정 **********/
   const handleNicknameChange = (value: string) => {
     setNickname(value);
     setNicknameError(validateNickname(value));
     setNicknameSuccess(undefined);
   };
-  // input OnBlur 될때마다 검사
+  /********** 닉네임 인풋에서 벗어날때마다 검사  **********/
   const handleNicknameBlur = async (prevName?: string) => {
     const err = validateNickname(nickname);
     setNicknameError(err);
@@ -44,7 +44,7 @@ const useSignUpForm = () => {
       }
     }
   };
-  // 이메일 OnBlur 될때마다 검사
+  /********** 이메일 인풋에서 벗어날때마다 검사 **********/
   const handleEmailBlur = async () => {
     setEmailError(undefined);
     setEmailSuccess(undefined);
@@ -56,7 +56,7 @@ const useSignUpForm = () => {
     if (isDuplicated) setEmailError("이미 사용 중인 이메일입니다.");
     else setEmailSuccess("사용 가능한 이메일입니다!");
   };
-  // 비밀번호 확인 OnBlur 될떄마다 검사
+  /********** 비밀번호확인 인풋에서 벗어날때마다 검사  **********/
   const handleConfirmPasswordBlur = () => {
     if (confirmPassword !== password) {
       setConfirmPasswordError("비밀번호가 일치하지 않습니다.");

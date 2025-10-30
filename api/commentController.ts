@@ -14,7 +14,7 @@ import {
   where,
 } from "firebase/firestore";
 
-// 댓글 달기
+/********** 댓글, 대댓글 생성 **********/
 export const createComment = async ({
   postId,
   content,
@@ -44,7 +44,7 @@ export const createComment = async ({
   }
 };
 
-// 댓글 다 가져오기
+/********** 댓글, 대댓글 다 가져오기 **********/
 export const fetchComments = async (
   postId: string
 ): Promise<IGetCommentData[]> => {
@@ -58,7 +58,7 @@ export const fetchComments = async (
   return comments;
 };
 
-// 댓글 수정
+/********** 댓글 수정  **********/
 export const updateComment = async (
   postId: string,
   commentId: string,
@@ -71,8 +71,7 @@ export const updateComment = async (
   });
 };
 
-// 대댓글 존재 여부 확인
-// 댓글이 대댓글을 가지고 있으면 true 반환
+/********** 대댓글이 달렸는지 확인 - 대댓글 있으면 삭제 안되고 댓글 수정 되도록 하기 위함  **********/
 export const checkRepliesExist = async (
   postId: string,
   commentId: string
@@ -83,7 +82,7 @@ export const checkRepliesExist = async (
   return !snap.empty;
 };
 
-// 댓글 삭제
+/********** 댓글 삭제 **********/
 export const deleteComment = async (postId: string, commentId: string) => {
   const hasReplies = await checkRepliesExist(postId, commentId);
   const commentRef = doc(db, "posts", postId, "comments", commentId);

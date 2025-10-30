@@ -1,7 +1,7 @@
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { useEffect, useState } from "react";
 
-// 파이어베이스 유저 가져오는 훅
+/********** 파이어베이스 유저 **********/
 const useFirebaseUser = () => {
   const [user, setUser] = useState<User | null>(null);
   const auth = getAuth();

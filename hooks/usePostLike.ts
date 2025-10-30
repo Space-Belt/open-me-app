@@ -1,7 +1,7 @@
 import { checkPostLiked, likePost, unlikePost } from "@/api/likeController";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-// 좋아요 훅
+/********** 좋아요 훅 **********/
 const usePostLike = (postId?: string, userId?: string) => {
   const queryClient = useQueryClient();
 

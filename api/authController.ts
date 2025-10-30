@@ -30,6 +30,7 @@ import {
 } from "firebase/firestore";
 import { deleteObject, listAll, ref } from "firebase/storage";
 
+/********** 이메일 중복 확인  **********/
 export const checkEmailDuplication = async (
   email: string
 ): Promise<boolean> => {
@@ -38,6 +39,7 @@ export const checkEmailDuplication = async (
   return !snapshot.empty;
 };
 
+/********** 닉네임 중복 확인 **********/
 export const checkNicknameDuplication = async (
   nickname: string
 ): Promise<boolean> => {
@@ -46,6 +48,7 @@ export const checkNicknameDuplication = async (
   return !snapshot.empty;
 };
 
+/********** 이메일 회원가입 **********/
 export const emailSignUp = async (
   email: string,
   password: string,
@@ -81,6 +84,7 @@ export const emailSignUp = async (
   }
 };
 
+/********** 이메일 로그인 **********/
 export const emailSignIn = async (
   email: string,
   password: string
@@ -123,6 +127,7 @@ export const emailSignIn = async (
   }
 };
 
+/********** 로그아웃  **********/
 export const emailSignOut = async () => {
   try {
     await signOut(auth);
@@ -132,11 +137,12 @@ export const emailSignOut = async () => {
   }
 };
 
+/********** 유저 프로필 수정 **********/
 export const updateUserProfile = async ({
   uid,
   nickname,
   photoURL,
-  newImageUri, // 새 이미지를 업로드할 경우
+  newImageUri,
 }: {
   uid: string;
   nickname?: string;
@@ -203,9 +209,7 @@ export const updateUserProfile = async ({
   }
 };
 
-/**
- *  삭제
- */
+/********** 회원탈퇴 **********/
 export const deleteAccount = async (
   uid: string
 ): Promise<{
@@ -293,7 +297,7 @@ export const deleteAccount = async (
   }
 };
 
-// 비밀번호 변경
+/********** 비밀번호 변경 **********/
 export const changePassword = async ({
   currentPassword,
   newPassword,

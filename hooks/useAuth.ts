@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 
 const KEY = "auth_data";
 
+/********** 시큐어스토어 토큰 저장 훅 **********/
 export const useAuth = () => {
   const [auth, setAuth] = useState<ISecureStoreAuthData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -13,6 +14,7 @@ export const useAuth = () => {
     loadAuth();
   }, []);
 
+  /********** 시큐어스토어 토큰 불러오기 **********/
   const loadAuth = async () => {
     try {
       const data = await SecureStore.getItemAsync(KEY);
@@ -28,7 +30,7 @@ export const useAuth = () => {
     }
   };
 
-  // 로그인
+  /********** 로그인 시 토큰등 정보 저장 **********/
   const login = useCallback(async (data: ISecureStoreAuthData) => {
     try {
       await SecureStore.setItemAsync(KEY, JSON.stringify(data));
@@ -41,7 +43,7 @@ export const useAuth = () => {
     }
   }, []);
 
-  // 로그아웃
+  /********** 로그아웃 시 토큰등의 정보 삭제 **********/
   const logout = useCallback(async () => {
     try {
       await SecureStore.deleteItemAsync(KEY);

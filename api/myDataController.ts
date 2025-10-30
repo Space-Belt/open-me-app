@@ -13,7 +13,7 @@ import {
   where,
 } from "firebase/firestore";
 
-// 내정보 가져오는 간단 함수
+/********** 내정보 가져오기 **********/
 export const getCurrentUserInfo = () => {
   const user = auth.currentUser;
   if (!user) return null;
@@ -32,7 +32,7 @@ export const getCurrentUserInfo = () => {
   };
 };
 
-// 내 게시물 개수
+/********** 내 게시물 개수 가져오기 **********/
 export const getMyPostsCount = async (uid: string): Promise<number> => {
   try {
     const postsRef = collection(db, "posts");
@@ -45,6 +45,7 @@ export const getMyPostsCount = async (uid: string): Promise<number> => {
   }
 };
 
+/********** 내 댓글 갯수 가져오기 **********/
 export const getMyCommentsCount = async (uid: string): Promise<number> => {
   try {
     // 모든 posts/{postId}/comments에서 내가 쓴 댓글만 조회
@@ -61,7 +62,7 @@ export const getMyCommentsCount = async (uid: string): Promise<number> => {
   }
 };
 
-// 한 번에 가져오기
+/********** 게시물, 댓글 한번에 가져오기  **********/
 export const getMyStats = async (uid: string) => {
   const [postsCount, commentsCount] = await Promise.all([
     getMyPostsCount(uid),
@@ -74,6 +75,7 @@ export const getMyStats = async (uid: string) => {
   };
 };
 
+/********** 내가 올린게시물 가져오기 **********/
 export const fetchMyPostsPaging = async ({
   uid,
   pageParam,

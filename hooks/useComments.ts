@@ -8,7 +8,7 @@ import { ICreateCommentInput } from "@/types/comment";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
-// postId별 댓글 관리
+/********** 댓글 관련 훅 **********/
 const useComments = (
   postId: string,
   callBack: () => void,
@@ -23,14 +23,14 @@ const useComments = (
   const [replyingToNick, setReplyingToNick] = useState<string | null>(null);
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
 
-  // 댓글 목록 불러오기
+  /********** 댓글목록 가져오기 **********/
   const { data: comments, isLoading } = useQuery({
     queryKey: ["comments", postId],
     queryFn: () => fetchComments(postId),
     enabled: !!postId,
   });
 
-  // 댓글 작성
+  /********** 댓글 작성하기 **********/
   const addComment = useMutation({
     mutationFn: (input: ICreateCommentInput) => {
       if (editingCommentId) {
@@ -53,7 +53,7 @@ const useComments = (
     onError: callBack,
   });
 
-  // 댓글 삭제
+  /********** 댓글 삭제 **********/
   const deleteCommentMutation = useMutation({
     mutationFn: (commentId: string) => deleteComment(postId, commentId),
     onSuccess: () => {

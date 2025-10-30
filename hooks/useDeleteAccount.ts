@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 
-// 회원 탈퇴 훅
+/********** 회원 탈퇴 훅 **********/
 export const useDeleteAccount = () => {
   const queryClient = useQueryClient();
   const { logout } = useAuth();

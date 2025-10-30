@@ -17,6 +17,7 @@ import {
 } from "firebase/firestore";
 import { uploadPostImages } from "./imageController";
 
+/********** 게시물 생성 **********/
 export const createPost = async ({
   title,
   content,
@@ -25,7 +26,7 @@ export const createPost = async ({
   displayName,
   photoURL,
 }: IPostData & { images: string[] }) => {
-  // 1. 이미지 업로드 (Storage)
+  // 1. 이미지 업로드
   const imageUrls =
     images.length > 0 ? await uploadPostImages(images, uid) : [];
 
@@ -43,9 +44,10 @@ export const createPost = async ({
     commentCount: 0,
   });
 
-  return docRef.id; // 게시물 ID 반환
+  return docRef.id;
 };
 
+/********** 모두의 게시물 가져오기 desc **********/
 export const fetchPostsPaging = async ({
   pageParam,
 }: {
@@ -75,6 +77,7 @@ export const fetchPostsPaging = async ({
   return { posts, lastDoc: newLastDoc };
 };
 
+/********** 게시물 하나 가져오기 **********/
 export const fetchPostById = async (id: string) => {
   const docRef = doc(db, "posts", id);
   const docSnap = await getDoc(docRef);
@@ -105,7 +108,7 @@ export const updatePost = async (
   });
 };
 
-// 삭제
+/********** 게시물, 게시물에 연결된 댓글들 삭제 **********/
 export const deletePostWithComments = async (postId: string) => {
   const batch = writeBatch(db);
 
@@ -121,5 +124,3 @@ export const deletePostWithComments = async (postId: string) => {
 
   await batch.commit();
 };
-
-// 무한스크롤 형식

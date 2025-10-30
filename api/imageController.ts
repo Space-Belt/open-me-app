@@ -1,6 +1,7 @@
 import { storage } from "@/lib/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
+/********** 사진 한장 url 변경 프로필 사진 **********/
 export const uploadProfileImage = async (
   localUri: string,
   uid: string
@@ -27,6 +28,7 @@ export const uploadProfileImage = async (
   }
 };
 
+/********** 이미지 여러장 변경 **********/
 export const uploadPostImages = async (
   localUris: string[],
   uid: string
@@ -40,10 +42,10 @@ export const uploadPostImages = async (
       if (!response.ok)
         throw new Error(`이미지 fetch 실패: ${response.status}`);
       const blob = await response.blob();
-      // 2. Firebase Storage로 업로드
+
       const fileRef = ref(storage, `posts/${uid}/${Date.now()}_${idx}.jpg`);
       await uploadBytes(fileRef, blob);
-      // 3. 업로드 후 다운로드 URL 반환
+
       return await getDownloadURL(fileRef);
     }
   });

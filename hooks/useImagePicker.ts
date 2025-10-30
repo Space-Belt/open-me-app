@@ -3,7 +3,7 @@ import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { Linking } from "react-native";
 
-// 이미지 선택 훅
+/********** 이미지 선택, 사진 가져오는 훅 **********/
 const useImagePicker = (imageCount = 3) => {
   const [images, setImages] = useState<string[]>([]);
 
