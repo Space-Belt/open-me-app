@@ -2,9 +2,15 @@ import { primaryColors } from "@/constants/theme";
 import { Tabs } from "expo-router";
 import React from "react";
 
+import SelectedHomeIcon from "@/assets/images/icons/blue_home_icon.svg";
 import HomeIcon from "@/assets/images/icons/home_icon.svg";
+
+import SelectedMyPageIcon from "@/assets/images/icons/blue_my_page.svg";
 import MyPageIcon from "@/assets/images/icons/my_page.svg";
+
+import SelectedMyPostIcon from "@/assets/images/icons/blue_my_post.svg";
 import MyPostIcon from "@/assets/images/icons/my_post.svg";
+
 import { Platform } from "react-native";
 
 export default function TabLayout() {
@@ -25,27 +31,36 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Home",
-          tabBarIcon: ({ color, focused }) => (
-            <HomeIcon width={30} height={30} />
-          ),
+          tabBarIcon: ({ color, focused }) =>
+            focused ? (
+              <SelectedHomeIcon width={30} height={30} />
+            ) : (
+              <HomeIcon width={30} height={30} />
+            ),
         }}
       />
       <Tabs.Screen
         name="my-post"
         options={{
           title: "MyPost",
-          tabBarIcon: ({ color, focused }) => (
-            <MyPostIcon width={30} height={30} />
-          ),
+          tabBarIcon: ({ color, focused }) =>
+            focused ? (
+              <SelectedMyPostIcon width={30} height={30} />
+            ) : (
+              <MyPostIcon width={30} height={30} />
+            ),
         }}
       />
       <Tabs.Screen
         name="my-page"
         options={{
           title: "MyPage",
-          tabBarIcon: ({ color, focused }) => (
-            <MyPageIcon width={30} height={30} />
-          ),
+          tabBarIcon: ({ color, focused }) =>
+            focused ? (
+              <SelectedMyPageIcon width={30} height={30} />
+            ) : (
+              <MyPageIcon width={30} height={30} />
+            ),
         }}
       />
     </Tabs>
