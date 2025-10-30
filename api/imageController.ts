@@ -6,6 +6,9 @@ export const uploadProfileImage = async (
   uid: string
 ): Promise<string> => {
   try {
+    if (localUri.startsWith("https://")) {
+      return localUri;
+    }
     if (!storage) throw new Error("Firebase Storage가 초기화되지 않았습니다.");
     const response = await fetch(localUri);
 
@@ -29,14 +32,20 @@ export const uploadPostImages = async (
   uid: string
 ): Promise<string[]> => {
   const uploadPromises = localUris.map(async (uri, idx) => {
-    const response = await fetch(uri);
-    if (!response.ok) throw new Error(`이미지 fetch 실패: ${response.status}`);
-    const blob = await response.blob();
-    // 2. Firebase Storage로 업로드
-    const fileRef = ref(storage, `posts/${uid}/${Date.now()}_${idx}.jpg`);
-    await uploadBytes(fileRef, blob);
-    // 3. 업로드 후 다운로드 URL 반환
-    return await getDownloadURL(fileRef);
+    if (uri.startsWith("https://")) {
+      // 이미 Storage URL인 경우 그대로 사용
+      return uri;
+    } else {
+      const response = await fetch(uri);
+      if (!response.ok)
+        throw new Error(`이미지 fetch 실패: ${response.status}`);
+      const blob = await response.blob();
+      // 2. Firebase Storage로 업로드
+      const fileRef = ref(storage, `posts/${uid}/${Date.now()}_${idx}.jpg`);
+      await uploadBytes(fileRef, blob);
+      // 3. 업로드 후 다운로드 URL 반환
+      return await getDownloadURL(fileRef);
+    }
   });
 
   return await Promise.all(uploadPromises);
