@@ -76,6 +76,7 @@ const PostEditScreen = (props: IPostEditScreenProps) => {
         ? () => {
             queryClient.invalidateQueries({ queryKey: ["myposts", auth?.uid] });
             queryClient.invalidateQueries({ queryKey: ["myStats", auth?.uid] });
+            queryClient.invalidateQueries({ queryKey: ["post", props.postId] });
             router.replace("/(tabs)");
           }
         : () => {}

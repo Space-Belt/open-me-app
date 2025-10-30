@@ -111,7 +111,6 @@ export default function PostDetail() {
     return <BasicIndicator type="spinner" />;
   }
 
-  /** 본인꺼 삭제 수정 가능해야합니디 !!!!! */
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}

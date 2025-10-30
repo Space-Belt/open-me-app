@@ -143,6 +143,7 @@ export default function MyPageScreen() {
         <BasicButton
           style={styles.profileBtn}
           textStyle={styles.profiltBtnText}
+          size={"small"}
           title="프로필 수정하기"
           onPress={handleEditProfile}
         />

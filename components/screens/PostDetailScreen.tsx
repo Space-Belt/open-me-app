@@ -21,6 +21,7 @@ import UserIcon from "@/assets/images/icons/user_icon.svg";
 import usePostLike from "@/hooks/usePostLike";
 import usePostMutation from "@/hooks/usePostMutation";
 import { showOneButtonModal, showTwoButtonModal } from "@/utils/modal";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import BasicText from "../common/BasicText";
 
@@ -58,8 +59,10 @@ const PostDetailScreen = ({
   contentOwner,
   contentOwnerPhotoURL,
 }: Props) => {
+  const queryClient = useQueryClient();
   const router = useRouter();
   const successCallback = () => {
+    queryClient.invalidateQueries({ queryKey: ["myposts", myInfo?.uid] });
     showOneButtonModal("삭제", "삭제 성공!", () => {
       router.replace("/(tabs)");
     });
