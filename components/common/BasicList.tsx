@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.16,
     shadowRadius: 5,
-    elevation: 7, // Android용 그림자
+    elevation: 7,
     backgroundColor: "#fff",
   },
   thumbImg: {
@@ -84,7 +84,6 @@ const styles = StyleSheet.create({
   infoRow: {
     flexDirection: "row",
     flexGrow: 1,
-    // justifyContent: "space-between",
     alignItems: "center",
     marginTop: 8,
   },

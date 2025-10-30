@@ -98,7 +98,8 @@ export default function SignUpScreen() {
                 email: data.user.email ?? "",
                 accessToken: data.token.accessToken,
                 refreshToken: data.token.refreshToken,
-                nickname: nickname,
+                photoURL: data.user.photoURL ?? "",
+                displayName: nickname,
                 expirationTime: data.token.expirationTime,
               };
               try {
@@ -111,9 +112,7 @@ export default function SignUpScreen() {
                 showOneButtonModal(
                   "로그인 오류",
                   "로그인 실패!\n죄송합니다.\n다시시도해주세요",
-                  () => {
-                    // router.push("/(auth)/signin");
-                  }
+                  () => {}
                 );
                 throw err;
               }
@@ -126,9 +125,7 @@ export default function SignUpScreen() {
       showOneButtonModal(
         "로그인 오류",
         "로그인 실패!\n죄송합니다.\n다시시도해주세요",
-        () => {
-          // router.push("/(auth)/signin");
-        }
+        () => {}
       );
     },
   });
