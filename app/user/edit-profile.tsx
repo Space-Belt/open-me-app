@@ -4,6 +4,7 @@ import BasicInput from "@/components/common/BasicInput";
 import BasicText from "@/components/common/BasicText";
 import { useSignUpForm } from "@/hooks/useSignUpform";
 import {
+  Button,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -19,6 +20,7 @@ import PhotoIcon from "@/assets/images/icons/photo_icon.svg";
 import BasicButton from "@/components/common/BasicButton";
 import { typography } from "@/constants/theme";
 import { useAuth } from "@/hooks/useAuth";
+import { useFirebaseUser } from "@/hooks/useFirebaseUser";
 import { useImagePicker } from "@/hooks/useImagePicker";
 import useUpdateProfile from "@/hooks/useUpdateProfile";
 import { showOneButtonModal } from "@/utils/modal";
@@ -73,6 +75,21 @@ export default function EditProfileScreen() {
       }
     }
   }, [auth]);
+
+  const user = useFirebaseUser();
+
+  if (!user) {
+    // 로그인 안된 상태이므로 로그인 화면 또는 메시지
+    return (
+      <View style={styles.errorContainer}>
+        <BasicText>로그인이 만료되었습니다.</BasicText>
+        <Button
+          title="로그인 화면로 이동"
+          onPress={() => router.replace("/(auth)/signin")}
+        />
+      </View>
+    );
+  }
 
   return (
     <KeyboardAvoidingView
@@ -133,10 +150,15 @@ export default function EditProfileScreen() {
                   placeholder="닉네임 입력 (2~8자)"
                   errorMessage={nicknameError}
                   successMessage={nicknameSuccess}
-                  onBlur={handleNicknameBlur}
+                  onBlur={() => handleNicknameBlur(auth?.displayName)}
                 />
               </View>
-              <BasicButton title="수정하기" onPress={handleEditInfo} />
+              <BasicButton
+                loading={updateProfile.isPending}
+                disabled={updateProfile.isPending}
+                title="수정하기"
+                onPress={handleEditInfo}
+              />
             </View>
           </BasicContainer>
         </ScrollView>
@@ -146,6 +168,11 @@ export default function EditProfileScreen() {
 }
 
 const styles = StyleSheet.create({
+  errorContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   profileWrapper: {
     alignItems: "center",
     justifyContent: "center",
