@@ -2,6 +2,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useComments } from "@/hooks/useComments";
 import { IGetCommentData } from "@/types/comment";
 import { showOneButtonModal } from "@/utils/modal";
+import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import CommentItem from "./CommentItem";
@@ -17,8 +18,18 @@ const CommentList = ({ postId, handleReplyPress, handleEdit }: Props) => {
   const handleCommentError = () => {
     showOneButtonModal("오류", "댓글 작업 중\n오류가 발생했습니다.", () => {});
   };
-  const { comments, isLoading, addComment, deleteCommentMutation } =
-    useComments(postId, handleCommentError);
+
+  const queryClient = useQueryClient();
+  const handleSuccessCallback = () => {
+    queryClient.invalidateQueries({ queryKey: ["myposts", auth?.uid] });
+    queryClient.invalidateQueries({ queryKey: ["myStats", auth?.uid] });
+  };
+
+  const { comments, deleteCommentMutation } = useComments(
+    postId,
+    handleCommentError,
+    handleSuccessCallback
+  );
 
   const handleDelete = async (comment: IGetCommentData) => {
     // 삭제 전 확인 모달 띄우기 등
@@ -34,7 +45,6 @@ const CommentList = ({ postId, handleReplyPress, handleEdit }: Props) => {
     if (postId) {
     }
   }, [postId]);
-  console.log(JSON.stringify(auth, null, 2));
 
   return (
     <View style={styles.container}>
