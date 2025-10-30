@@ -1,5 +1,5 @@
 import { db } from "@/lib/firebase";
-import { IPostData, IPostedData } from "@/types/post";
+import { IGetPostedData, IPostData, IPostedData } from "@/types/post";
 import { POSTS_PAGE_SIZE } from "@/utils/public";
 import {
   addDoc,
@@ -12,13 +12,15 @@ import {
   query,
   serverTimestamp,
   startAfter,
+  updateDoc,
+  writeBatch,
 } from "firebase/firestore";
 import { uploadPostImages } from "./imageController";
 
 export const createPost = async ({
   title,
   content,
-  images, // localUri:string[]
+  images,
   uid,
   displayName,
   photoURL,
@@ -77,8 +79,47 @@ export const fetchPostById = async (id: string) => {
   const docRef = doc(db, "posts", id);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
-    // return { id: docSnap.id, ...docSnap.data() };
-    return docSnap.data();
+    return docSnap.data() as IGetPostedData;
   }
   return null;
 };
+
+export const updatePost = async (
+  postId: string,
+  {
+    title,
+    content,
+    imageUrls,
+  }: {
+    title: string;
+    content: string;
+    imageUrls: string[];
+  }
+) => {
+  const postRef = doc(db, "posts", postId);
+  await updateDoc(postRef, {
+    title,
+    content,
+    imageUrls,
+    updatedAt: serverTimestamp(),
+  });
+};
+
+// 삭제
+export const deletePostWithComments = async (postId: string) => {
+  const batch = writeBatch(db);
+
+  const commentsCol = collection(db, "posts", postId, "comments");
+  const snap = await getDocs(commentsCol);
+
+  snap.docs.forEach((commentDoc) => {
+    batch.delete(commentDoc.ref);
+  });
+
+  const postRef = doc(db, "posts", postId);
+  batch.delete(postRef);
+
+  await batch.commit();
+};
+
+// 무한스크롤 형식
