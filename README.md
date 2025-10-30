@@ -1,50 +1,90 @@
-# Welcome to your Expo app 👋
+# 🌞 OPENME
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+> **따뜻한 소통의 공간을 만들고자 한 모바일 소셜 공유 앱**
 
-## Get started
+사용자들이 모바일 앱에서 올리고 싶은 사진과 글을 자유롭게 올리며 자신의 이야기를 터놓고 이야기하고,  
+타 유저들의 댓글과 함께 서로 소통함으로써 **삭막한 세상에 따스한 온기를 나누는 공간**을 만들었습니다.
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## ⚙️ 주요 기능
 
-2. Start the app
+- 🔓 **비로그인 게시판 열람** — 로그인하지 않아도 자유롭게 게시판을 둘러볼 수 있습니다.
+- 🧑‍💼 **간편 회원가입** — 닉네임과 프로필 사진(선택)을 포함한 간단한 가입 절차
+- 📝 **게시물 등록 및 미리보기** — 업로드 전 게시물 미리보기 가능
+- 🖼️ **사진 캐러셀 / 확대 기능** — 여러 장의 이미지를 자연스럽게 넘기고 확대 보기 가능
+- 💬 **좋아요 & 댓글 / 대댓글** — 유저 간 활발한 상호작용
+- 📁 **내 활동 모아보기** — 내가 쓴 글과 댓글을 한눈에
+- ⚙️ **마이페이지 관리** — 프로필 수정, 비밀번호 변경, 로그아웃, 회원탈퇴 등 모든 기능 지원
 
-   ```bash
-   npx expo start
-   ```
+---
 
-In the output, you'll find options to open the app in a
+## 🧱 기술 스택
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+| 분류                    | 사용 기술                                     |
+| ----------------------- | --------------------------------------------- |
+| **Framework**           | React Native (Expo)                           |
+| **Authentication / DB** | Firebase Authentication / Firestore / Storage |
+| **상태관리**            | Zustand                                       |
+| **데이터 통신**         | React Query                                   |
+| **보안 저장소**         | Expo Secure Store                             |
+| **미디어 처리**         | Expo Image Picker / Expo Image Manipulator    |
+| **UI 구성요소**         | React Native Reanimated Carousel              |
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+---
 
-## Get a fresh project
+## 📱 주요 화면 미리보기
 
-When you're ready, run:
+|                                                  로그인                                                  |                                                 회원가입                                                 |
+| :------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------: |
+| <img src="https://github.com/user-attachments/assets/4d5a5fad-ff07-40d1-b523-6462cf04236d" width="300"/> | <img src="https://github.com/user-attachments/assets/3fb7760b-e4b7-4d9e-8264-a2fed7b621c7" width="300"/> |
+
+|                                                메인페이지                                                |                                                 글 상세                                                  |
+| :------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------: |
+| <img src="https://github.com/user-attachments/assets/5c197611-7f5e-4b4d-9830-95d76b97d6df" width="300"/> | <img src="https://github.com/user-attachments/assets/7ab2189d-5cea-4377-b64f-aff5ad67e907" width="300"/> |
+
+|                                                   댓글                                                   |                                               카메라 촬영                                                |
+| :------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------: |
+| <img src="https://github.com/user-attachments/assets/ae1d15c1-b300-4f72-a761-85d49ac66d8f" width="300"/> | <img src="https://github.com/user-attachments/assets/c14b0eef-90d2-492c-870a-e8ca7b180130" width="300"/> |
+
+|                                              비밀번호 변경                                               |
+| :------------------------------------------------------------------------------------------------------: |
+| <img src="https://github.com/user-attachments/assets/3deb601a-0b6e-44fc-9563-868fb1dc65bd" width="300"/> |
+
+---
+
+## 📲 앱 주요 플로우
+
+1. 앱 실행 시 로그인 화면 진입
+2. 비로그인 상태에서도 게시판 열람 가능
+3. 회원가입 → 프로필 등록
+4. 게시물 업로드 (사진 + 내용)
+5. 다른 유저의 글 확인 및 댓글 / 대댓글 남기기
+6. 마이페이지에서 내 글 및 계정 관리
+
+---
+
+## 🧑‍💻 개발 포인트
+
+- Firebase Auth + Firestore를 통한 인증 및 데이터 연동
+- React Query로 네트워크 요청 캐싱 및 성능 최적화
+- Zustand로 전역 모달 및 전역 상태 제어
+- Expo Image Picker와 Manipulator로 사진 처리
+- Reanimated Carousel로 자연스러운 이미지 넘김
+- Expo Secure Store로 로그인 토큰 보안 저장
+
+---
+
+## 🏁 실행 방법
 
 ```bash
-npm run reset-project
+# 패키지 설치
+yarn install
+
+# 실행
+npx expo start
+
+
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
