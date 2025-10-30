@@ -1,0 +1,101 @@
+import { db } from "@/lib/firebase";
+import { IPostedData } from "@/types/post";
+import { POSTS_PAGE_SIZE } from "@/utils/public";
+import {
+  collection,
+  collectionGroup,
+  getCountFromServer,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  startAfter,
+  where,
+} from "firebase/firestore";
+
+// 내 게시물 개수
+export const getMyPostsCount = async (uid: string): Promise<number> => {
+  try {
+    const postsRef = collection(db, "posts");
+    const q = query(postsRef, where("uid", "==", uid));
+    const snapshot = await getCountFromServer(q);
+    return snapshot.data().count;
+  } catch (error) {
+    console.error("게시물 개수 조회 실패:", error);
+    return 0;
+  }
+};
+
+export const getMyCommentsCount = async (uid: string): Promise<number> => {
+  try {
+    // 모든 posts/{postId}/comments에서 내가 쓴 댓글만 조회
+    const commentsQuery = query(
+      collectionGroup(db, "comments"),
+      where("authorUid", "==", uid),
+      where("isDeleted", "==", false) // 삭제되지 않은 댓글만
+    );
+    const snapshot = await getCountFromServer(commentsQuery);
+    return snapshot.data().count;
+  } catch (error) {
+    console.error("댓글 개수 조회 실패:", error);
+    return 0;
+  }
+};
+
+// 한 번에 가져오기
+export const getMyStats = async (uid: string) => {
+  const [postsCount, commentsCount] = await Promise.all([
+    getMyPostsCount(uid),
+    getMyCommentsCount(uid),
+  ]);
+
+  return {
+    postsCount,
+    commentsCount,
+  };
+};
+
+export const fetchMyPostsPaging = async ({
+  uid,
+  pageParam,
+}: {
+  uid: string;
+  pageParam: any;
+}): Promise<{ posts: IPostedData[]; lastDoc?: any }> => {
+  try {
+    const postsRef = collection(db, "posts");
+    let q;
+
+    if (pageParam) {
+      q = query(
+        postsRef,
+        where("uid", "==", uid),
+        orderBy("createdAt", "desc"),
+        startAfter(pageParam),
+        limit(POSTS_PAGE_SIZE)
+      );
+    } else {
+      q = query(
+        postsRef,
+        where("uid", "==", uid),
+        orderBy("createdAt", "desc"),
+        limit(POSTS_PAGE_SIZE)
+      );
+    }
+
+    const snap = await getDocs(q);
+
+    const posts = snap.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as IPostedData[];
+
+    const lastDoc =
+      snap.docs.length > 0 ? snap.docs[snap.docs.length - 1] : null;
+
+    return { posts, lastDoc };
+  } catch (error) {
+    console.error("❌ fetchMyPostsPaging 에러:", error);
+    throw error;
+  }
+};
