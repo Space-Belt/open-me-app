@@ -11,13 +11,14 @@ import {
   StyleSheet,
   Text,
 } from "react-native";
-import BasicContainer from "../common/BasicContainer";
-import BasicHeader from "../common/BasicHeader";
 
 import { fetchPostsPaging } from "@/api/postController";
-import PlustIcon from "@/assets/images/icons/plus_icon.svg";
+import WriteIcon from "@/assets/images/icons/write_icon.svg";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
+
+import BasicContainer from "../common/BasicContainer";
+import BasicHeader from "../common/BasicHeader";
 import BasicList from "../common/BasicList";
 
 const MainScreen = () => {
@@ -78,8 +79,9 @@ const MainScreen = () => {
     router.push(`/post/${id}`);
   };
   return (
-    <BasicContainer edges={["top"]} style={{ paddingHorizontal: 0 }}>
+    <BasicContainer edges={["top"]} style={styles.container}>
       <BasicHeader
+        style={styles.headerContainer}
         left={isAuthenticated && <></>}
         center={<SubLogo />}
         right={
@@ -108,7 +110,7 @@ const MainScreen = () => {
         style={[styles.addPostBtn, { bottom: isAuthenticated ? 20 : 70 }]}
         onPress={handleAddBtn}
       >
-        <PlustIcon width={30} height={30} />
+        <WriteIcon width={30} height={30} />
       </Pressable>
     </BasicContainer>
   );
@@ -122,7 +124,8 @@ const styles = StyleSheet.create({
     height: 50 * 0.6,
     resizeMode: "cover",
   },
-
+  container: { paddingHorizontal: 0 },
+  headerContainer: { paddingHorizontal: 16 },
   lookAroundText: {
     ...typography.body14SemiBold,
     color: primaryColors.sixty,
