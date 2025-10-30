@@ -1,17 +1,37 @@
-export interface IPost {
-  id?: string; // Firestore 문서ID
-  userId: string; // 작성자 uid
+import { Timestamp } from "firebase/firestore";
+
+export interface IPostData {
   title: string;
   content: string;
-  imageUrls: string[]; // 이미지 최대 3장
-  createdAt: Date;
+  images: string[]; // storage에 업로드한 url 배열
+  uid: string;
+  displayName: string;
+  photoURL?: string;
 }
 
-export interface IComment {
-  id?: string;
-  postId: string;
-  userId: string;
+export interface IPostedData {
+  id: string;
+  displayName: string;
+  imageUrls?: string[];
+  uid: string;
+  title: string;
   content: string;
-  parentId?: string; // 대댓글이면 부모 댓글ID, 아니면 undefined 또는 null
-  createdAt: Date;
+  photoURL: string;
+  likeCount: number;
+  commentCount: number;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+export interface IGetPostedData {
+  displayName: string;
+  imageUrls?: string[];
+  uid: string;
+  title: string;
+  content: string;
+  photoURL: string;
+  likeCount: number;
+  commentCount: number;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
 }

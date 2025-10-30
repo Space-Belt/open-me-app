@@ -9,5 +9,7 @@ export interface ISecureStoreAuthData {
   refreshToken: string;
   uid: string;
   email: string;
+  displayName: string;
+  photoURL: string | null;
   expirationTime: number;
 }
