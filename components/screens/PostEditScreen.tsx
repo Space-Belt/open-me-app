@@ -1,4 +1,4 @@
-import { IPost } from "@/types/post";
+import { IGetPostedData } from "@/types/post";
 import { isIOS, SCREEN_WIDTH } from "@/utils/public";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -28,6 +28,7 @@ import { useAuth } from "@/hooks/useAuth";
 import usePostMutation from "@/hooks/usePostMutation";
 import { handleAuthInput } from "@/utils/auth";
 import { showOneButtonModal, showTwoButtonModal } from "@/utils/modal";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import Carousel from "react-native-reanimated-carousel";
 import BasicButton from "../common/BasicButton";
@@ -35,7 +36,8 @@ import PhotoModal from "../common/PhotoModal";
 import PostDetailScreen from "./PostDetailScreen";
 
 interface IPostEditScreenProps {
-  post?: IPost;
+  post?: IGetPostedData;
+  postId?: string;
 }
 
 const MAX_IMAGES = 3;
@@ -46,6 +48,7 @@ const INFORMATION =
   "- 위를 클릭하셔서 사진을 선택할 수 있습니다.\n- 사진은 최대 3장까지 등록가능합니다.";
 
 const PostEditScreen = (props: IPostEditScreenProps) => {
+  const queryClient = useQueryClient();
   const router = useRouter();
 
   const { auth } = useAuth();
@@ -53,18 +56,20 @@ const PostEditScreen = (props: IPostEditScreenProps) => {
   // 등록 클릭, 등록 뮤테이션, 등록 이후 콜백
   const successCallback = (isSuccess: boolean) => {
     showOneButtonModal(
-      "등록결과",
+      props?.postId ? "수정결과" : "등록결과",
       isSuccess
         ? "등록 성공했습니다!\n홈, 내가 등록한글에서 확인 가능합니다."
         : "등록 실패했습니다..\n다시 시도해주세요",
       isSuccess
         ? () => {
+            queryClient.invalidateQueries({ queryKey: ["myposts", auth?.uid] });
+            queryClient.invalidateQueries({ queryKey: ["myStats", auth?.uid] });
             router.replace("/(tabs)");
           }
         : () => {}
     );
   };
-  const { mutation } = usePostMutation(
+  const { createPostUpdatemutation } = usePostMutation(
     successCallback,
     props?.post,
     auth?.uid,
@@ -72,7 +77,6 @@ const PostEditScreen = (props: IPostEditScreenProps) => {
     auth?.photoURL ?? ""
   );
   const handlePost = () => {
-    console.log("클립되었스비낟.");
     let isOkToGo = true;
     if (title.length < 2 || title.length > 15) {
       isOkToGo = false;
@@ -88,11 +92,11 @@ const PostEditScreen = (props: IPostEditScreenProps) => {
         () => {}
       );
     } else {
-      console.log("이제 뮤테이션 돌려요.");
-      mutation.mutate({
+      createPostUpdatemutation.mutate({
         title,
         content,
         images,
+        postId: props?.postId || undefined,
       });
     }
   };
@@ -315,6 +319,7 @@ const PostEditScreen = (props: IPostEditScreenProps) => {
                   content={content}
                   imageUrls={images}
                   isPreview={true}
+                  isMyPost={true}
                   setShowPhoto={setShowPhotoModal}
                 />
               )}
