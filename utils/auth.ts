@@ -1,4 +1,4 @@
-export const nicknameRegex = /^[가-힣a-zA-Z0-9._-]{2,12}$/;
+export const nicknameRegex = /^[가-힣a-zA-Z0-9._-]{2,8}$/;
 const consonantVowelOnlyRegex = /^[ㄱ-ㅎㅏ-ㅣ]+$/;
 
 export const validateEmailFormat = (email: string): boolean =>
@@ -15,8 +15,8 @@ export const validatePassword = (pwd: string): string | undefined => {
 
 export const validateNickname = (nickname: string): string | undefined => {
   if (!nickname) return "닉네임을 입력해 주세요.";
-  if (nickname.length < 2 || nickname.length > 12)
-    return "닉네임은 2~12글자로 입력해 주세요.";
+  if (nickname.length < 2 || nickname.length > 8)
+    return "닉네임은 2~8글자로 입력해 주세요.";
   if (!nicknameRegex.test(nickname))
     return "한글/영문/숫자/_ . -만 사용 가능해요.";
   if (consonantVowelOnlyRegex.test(nickname))
