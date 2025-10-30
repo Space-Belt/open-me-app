@@ -3,9 +3,11 @@ import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { Linking } from "react-native";
 
-export const useImagePicker = (imageCount = 3) => {
+// 이미지 선택 훅
+const useImagePicker = (imageCount = 3) => {
   const [images, setImages] = useState<string[]>([]);
 
+  // 권한 확인
   const checkPermission = async (
     type: "gallery" | "camera"
   ): Promise<boolean> => {
@@ -45,6 +47,7 @@ export const useImagePicker = (imageCount = 3) => {
       selectionLimit: imageCount - images.length,
       quality: 1,
     });
+
     if (result.canceled) return;
     setImages((prev) =>
       [...prev, ...result.assets.map((a) => a.uri)].slice(0, imageCount)
@@ -75,3 +78,5 @@ export const useImagePicker = (imageCount = 3) => {
     checkPermission,
   };
 };
+
+export default useImagePicker;

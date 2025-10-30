@@ -1,10 +1,10 @@
 import { checkPostLiked, likePost, unlikePost } from "@/api/likeController";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export function usePostLike(postId?: string, userId?: string) {
+// 좋아요 훅
+const usePostLike = (postId?: string, userId?: string) => {
   const queryClient = useQueryClient();
 
-  // userId 없거나 postId 없으면 쿼리 실행 안함
   const { data: likedByMe, refetch: refetchLike } = useQuery({
     queryKey: userId && postId ? ["postLike", postId, userId] : [],
     queryFn: () => checkPostLiked(postId!, userId!),
@@ -36,3 +36,5 @@ export function usePostLike(postId?: string, userId?: string) {
     refetchLike,
   };
 }
+
+export default usePostLike;

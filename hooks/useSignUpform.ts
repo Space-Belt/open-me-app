@@ -6,7 +6,8 @@ import {
 import { validateEmailFormat, validateNickname } from "@/utils/auth";
 import { useState } from "react";
 
-export const useSignUpForm = () => {
+// 회원 가입 훅
+const useSignUpForm = () => {
   // state
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState<string>();
@@ -24,21 +25,26 @@ export const useSignUpForm = () => {
   const [confirmPasswordSuccess, setConfirmPasswordSuccess] =
     useState<string>();
 
+  // 닉네임 바꾸기
   const handleNicknameChange = (value: string) => {
     setNickname(value);
     setNicknameError(validateNickname(value));
     setNicknameSuccess(undefined);
   };
-  const handleNicknameBlur = async () => {
+  // input OnBlur 될때마다 검사
+  const handleNicknameBlur = async (prevName?: string) => {
     const err = validateNickname(nickname);
     setNicknameError(err);
     setNicknameSuccess(undefined);
     if (!err) {
-      const isDuplicated = await checkNicknameDuplication(nickname);
-      if (isDuplicated) setNicknameError("이미 사용 중인 닉네임입니다.");
-      else setNicknameSuccess("사용 가능한 닉네임입니다!");
+      if (prevName !== nickname) {
+        const isDuplicated = await checkNicknameDuplication(nickname);
+        if (isDuplicated) setNicknameError("이미 사용 중인 닉네임입니다.");
+        else setNicknameSuccess("사용 가능한 닉네임입니다!");
+      }
     }
   };
+  // 이메일 OnBlur 될때마다 검사
   const handleEmailBlur = async () => {
     setEmailError(undefined);
     setEmailSuccess(undefined);
@@ -50,6 +56,7 @@ export const useSignUpForm = () => {
     if (isDuplicated) setEmailError("이미 사용 중인 이메일입니다.");
     else setEmailSuccess("사용 가능한 이메일입니다!");
   };
+  // 비밀번호 확인 OnBlur 될떄마다 검사
   const handleConfirmPasswordBlur = () => {
     if (confirmPassword !== password) {
       setConfirmPasswordError("비밀번호가 일치하지 않습니다.");
@@ -85,3 +92,5 @@ export const useSignUpForm = () => {
     handleConfirmPasswordBlur,
   };
 };
+
+export default useSignUpForm;

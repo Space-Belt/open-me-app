@@ -9,11 +9,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 // postId별 댓글 관리
-export function useComments(
+const useComments = (
   postId: string,
   callBack: () => void,
   successCallBack: () => void
-) {
+) => {
   const queryClient = useQueryClient();
 
   const [commentValue, setCommentValue] = useState<string>("");
@@ -53,6 +53,7 @@ export function useComments(
     onError: callBack,
   });
 
+  // 댓글 삭제
   const deleteCommentMutation = useMutation({
     mutationFn: (commentId: string) => deleteComment(postId, commentId),
     onSuccess: () => {
@@ -78,4 +79,6 @@ export function useComments(
     addComment,
     deleteCommentMutation,
   };
-}
+};
+
+export default useComments;

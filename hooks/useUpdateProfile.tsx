@@ -3,6 +3,7 @@ import { ISecureStoreAuthData } from "@/types/auth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "./useAuth";
 
+// 프로필 업데이트 훅
 const useUpdateProfile = (callBack: () => void) => {
   const { auth, login } = useAuth();
   const queryClient = useQueryClient();
