@@ -2,7 +2,7 @@ import BasicContainer from "@/components/common/BasicContainer";
 import BasicHeader from "@/components/common/BasicHeader";
 import BasicInput from "@/components/common/BasicInput";
 import BasicText from "@/components/common/BasicText";
-import { useSignUpForm } from "@/hooks/useSignUpform";
+
 import {
   Button,
   Image,
@@ -20,8 +20,10 @@ import PhotoIcon from "@/assets/images/icons/photo_icon.svg";
 import BasicButton from "@/components/common/BasicButton";
 import { typography } from "@/constants/theme";
 import { useAuth } from "@/hooks/useAuth";
-import { useFirebaseUser } from "@/hooks/useFirebaseUser";
-import { useImagePicker } from "@/hooks/useImagePicker";
+
+import useFirebaseUser from "@/hooks/useFirebaseUser";
+import useImagePicker from "@/hooks/useImagePicker";
+import useSignUpForm from "@/hooks/useSignUpform";
 import useUpdateProfile from "@/hooks/useUpdateProfile";
 import { showOneButtonModal } from "@/utils/modal";
 import { isIOS } from "@/utils/public";

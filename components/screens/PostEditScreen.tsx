@@ -16,7 +16,7 @@ import BasicContainer from "../common/BasicContainer";
 import BasicHeader from "../common/BasicHeader";
 
 import { blackColors, primaryColors, typography } from "@/constants/theme";
-import { useImagePicker } from "@/hooks/useImagePicker";
+import useImagePicker from "@/hooks/useImagePicker";
 import BasicInput from "../common/BasicInput";
 import BasicText from "../common/BasicText";
 

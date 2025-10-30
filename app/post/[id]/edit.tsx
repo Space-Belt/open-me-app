@@ -1,7 +1,7 @@
 import { fetchPostById } from "@/api/postController";
 import BasicText from "@/components/common/BasicText";
 import PostEditScreen from "@/components/screens/PostEditScreen";
-import { useFirebaseUser } from "@/hooks/useFirebaseUser";
+import useFirebaseUser from "@/hooks/useFirebaseUser";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ActivityIndicator, Button, StyleSheet, View } from "react-native";

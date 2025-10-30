@@ -23,20 +23,25 @@ export const createComment = async ({
   authorPhotoURL,
   parentId = undefined,
 }: ICreateCommentInput) => {
-  const ref = collection(db, "posts", postId, "comments");
-  await addDoc(ref, {
-    content,
-    authorUid,
-    authorNickname,
-    authorPhotoURL,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-    parentId: parentId || null,
-    likeCount: 0,
-    isDeleted: false,
-  });
-  const postRef = doc(db, "posts", postId);
-  await updateDoc(postRef, { commentCount: increment(1) });
+  try {
+    const ref = collection(db, "posts", postId, "comments");
+    await addDoc(ref, {
+      content,
+      authorUid,
+      authorNickname,
+      authorPhotoURL,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+      parentId: parentId || null,
+      likeCount: 0,
+      isDeleted: false,
+    });
+    const postRef = doc(db, "posts", postId);
+    await updateDoc(postRef, { commentCount: increment(1) });
+  } catch (err) {
+    console.error("createComment error:", err);
+    throw err;
+  }
 };
 
 // 댓글 다 가져오기

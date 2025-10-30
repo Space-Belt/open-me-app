@@ -17,7 +17,8 @@ import EmptyHeart from "@/assets/images/icons/empty_heart.svg";
 import HeartIcon from "@/assets/images/icons/heart_icon.svg";
 
 import UserIcon from "@/assets/images/icons/user_icon.svg";
-import { usePostLike } from "@/hooks/usePostLike";
+
+import usePostLike from "@/hooks/usePostLike";
 import usePostMutation from "@/hooks/usePostMutation";
 import { showOneButtonModal, showTwoButtonModal } from "@/utils/modal";
 import { useRouter } from "expo-router";

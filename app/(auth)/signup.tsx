@@ -2,7 +2,7 @@ import BasicButton from "@/components/common/BasicButton";
 import BasicContainer from "@/components/common/BasicContainer";
 import BasicHeader from "@/components/common/BasicHeader";
 import BasicInput from "@/components/common/BasicInput";
-import { useSignUpForm } from "@/hooks/useSignUpform";
+import useSignUpForm from "@/hooks/useSignUpform";
 import { isIOS } from "@/utils/public";
 import {
   Image,
@@ -18,7 +18,7 @@ import {
 import { emailSignUp } from "@/api/authController";
 import { uploadProfileImage } from "@/api/imageController";
 import { useAuth } from "@/hooks/useAuth";
-import { useImagePicker } from "@/hooks/useImagePicker";
+
 import { handleAuthInput, validatePassword } from "@/utils/auth";
 import { showOneButtonModal, showTwoButtonModal } from "@/utils/modal";
 import { useMutation } from "@tanstack/react-query";
@@ -28,6 +28,7 @@ import CancelIcon from "@/assets/images/icons/close_icon.svg";
 import PhotoIcon from "@/assets/images/icons/photo_icon.svg";
 import BasicText from "@/components/common/BasicText";
 import { typography } from "@/constants/theme";
+import useImagePicker from "@/hooks/useImagePicker";
 
 export default function SignUpScreen() {
   const router = useRouter();

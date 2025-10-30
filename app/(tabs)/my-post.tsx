@@ -16,7 +16,7 @@ import WriteIcon from "@/assets/images/icons/write_icon.svg";
 import BasicText from "@/components/common/BasicText";
 import { primaryColors, typography } from "@/constants/theme";
 import { useAuth } from "@/hooks/useAuth";
-import { useFirebaseUser } from "@/hooks/useFirebaseUser";
+import useFirebaseUser from "@/hooks/useFirebaseUser";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 

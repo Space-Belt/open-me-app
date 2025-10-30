@@ -7,7 +7,7 @@ import BasicText from "@/components/common/BasicText";
 import PhotoModal from "@/components/common/PhotoModal";
 import PostDetailScreen from "@/components/screens/PostDetailScreen";
 import { useAuth } from "@/hooks/useAuth";
-import { useComments } from "@/hooks/useComments";
+
 import { showOneButtonModal } from "@/utils/modal";
 import { isIOS, SCREEN_WIDTH } from "@/utils/public";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -27,6 +27,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CloseIcon from "@/assets/images/icons/close_icon.svg";
 import BasicIndicator from "@/components/common/BasicIndicator";
 import { blackColors, primaryColors, typography } from "@/constants/theme";
+
+import useComments from "@/hooks/useComments";
 import { IGetCommentData } from "@/types/comment";
 
 export default function PostDetail() {

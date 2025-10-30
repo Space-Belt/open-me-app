@@ -4,7 +4,8 @@ import BasicHeader from "@/components/common/BasicHeader";
 import BasicInput from "@/components/common/BasicInput";
 import { useAuth } from "@/hooks/useAuth";
 import useChangePassword from "@/hooks/useChangePassword";
-import { useSignUpForm } from "@/hooks/useSignUpform";
+import useSignUpForm from "@/hooks/useSignUpform";
+
 import { handleAuthInput, validatePassword } from "@/utils/auth";
 import { showOneButtonModal } from "@/utils/modal";
 import { isIOS } from "@/utils/public";

@@ -1,5 +1,6 @@
 import { useAuth } from "@/hooks/useAuth";
-import { useComments } from "@/hooks/useComments";
+
+import useComments from "@/hooks/useComments";
 import { IGetCommentData } from "@/types/comment";
 import { showOneButtonModal } from "@/utils/modal";
 import { useQueryClient } from "@tanstack/react-query";

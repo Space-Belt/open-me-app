@@ -24,7 +24,7 @@ import MyPostIcon from "@/assets/images/icons/list_icon.svg";
 import CommentIcon from "@/assets/images/icons/message_icon.svg";
 import MypageButton from "@/components/mypage/MypageButton";
 import { useDeleteAccount } from "@/hooks/useDeleteAccount";
-import { useFirebaseUser } from "@/hooks/useFirebaseUser";
+import useFirebaseUser from "@/hooks/useFirebaseUser";
 
 const PADDING_HORIZONTAL = 32;
 const GAP = 12;
