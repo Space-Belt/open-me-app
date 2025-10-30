@@ -1,4 +1,4 @@
-import { primaryColors, typography } from "@/constants/theme";
+import { blackColors, primaryColors, typography } from "@/constants/theme";
 import React, { useState } from "react";
 import {
   Pressable,
@@ -30,6 +30,7 @@ interface BasicInputProps extends TextInputProps {
   inputStyle?: object;
   onBlur?: () => void;
   value?: string;
+  disable?: boolean;
 }
 
 const BasicInput = ({
@@ -49,6 +50,7 @@ const BasicInput = ({
   inputStyle,
   onBlur,
   value,
+  disable,
   ...textInputProps
 }: BasicInputProps) => {
   const hasButton = !!buttonTitle;
@@ -75,8 +77,12 @@ const BasicInput = ({
             hasButton && styles.inputWithButton,
             hasError && styles.inputError,
             hasSuccess && styles.inputSuccess,
+            disable && {
+              backgroundColor: blackColors.thirty,
+            },
             inputStyle,
           ]}
+          editable={!disable}
           onBlur={onBlur}
           placeholderTextColor="#999"
           maxLength={maxLength}
