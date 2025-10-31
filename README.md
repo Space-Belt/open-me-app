@@ -90,6 +90,8 @@
 yarn install
 
 # 실행
+npx expo run:ios
+npx expo run:android
 npx expo start
 
 
